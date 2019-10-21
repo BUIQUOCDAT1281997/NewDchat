@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".SettingFragment">
+
+
+    <TextView
+        android:drawableLeft="@drawable/ic_user"
+        android:textColor="@color/black"
+        android:drawablePadding="10dp"
+        android:padding="10dp"
+        android:id="@+id/setting_tv_account"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Your Account" />
+
+    <TextView
+        android:id="@+id/setting_tv_log_out"
+        android:textColor="@color/black"
+        android:padding="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Log out" />
+
+    <TextView
+        android:id="@+id/setting_tv_bla"
+        android:textColor="@color/black"
+        android:padding="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="BlaBla" />
+</LinearLayout>

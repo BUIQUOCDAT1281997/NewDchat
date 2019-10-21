@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DchatApplication</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="sign_in">Đăng nhập</string>
+    <string name="sign_up">Đăng ký</string>
+    <string name="create">Tạo mới</string>
+    <string name="create_new_account">Đăng ký tài khoản mới</string>
+    <string name="email">Email</string>
+    <string name="forgot_password">Quên mật khẩu?</string>
+    <string name="log_in">Đăng nhập</string>
+    <string name="password">Mật khẩu</string>
+    <string name="remember_me">Lưu mật khẩu của tôi</string>
+    <string name="textView_login">Đăng nhập</string>
+    <string name="edit_profile">Chỉnh sửa Profile của bạn</string>
+    <string name="status">Hôm nay bạn thế nào ?</string>
+    <string name="user_name">Nick Name của bạn</string>
+</resources>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_main"
+    app:startDestination="@id/menu_search">
+
+    <fragment
+        android:id="@+id/menu_search"
+        android:name="com.example.dchatapplication.SearchFragment"
+        android:label="fragment_search"
+        tools:layout="@layout/fragment_search" >
+        <action
+            android:id="@+id/action_searchFragment_to_friendsFragment"
+            app:destination="@id/menu_friends" />
+    </fragment>
+    <fragment
+        android:id="@+id/menu_friends"
+        android:name="com.example.dchatapplication.FriendsFragment"
+        android:label="fragment_friends"
+        tools:layout="@layout/fragment_friends" >
+        <action
+            android:id="@+id/action_friendsFragment_to_settingFragment"
+            app:destination="@id/menu_setting" />
+        <action
+            android:id="@+id/action_friendsFragment_to_searchFragment"
+            app:destination="@id/menu_search" />
+    </fragment>
+    <fragment
+        android:id="@+id/menu_setting"
+        android:name="com.example.dchatapplication.SettingFragment"
+        android:label="fragment_setting"
+        tools:layout="@layout/fragment_setting" >
+        <action
+            android:id="@+id/action_settingFragment_to_friendsFragment"
+            app:destination="@id/menu_friends" />
+        <action
+            android:id="@+id/action_menu_setting_to_accountFragment"
+            app:destination="@id/accountFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/accountFragment"
+        android:name="com.example.dchatapplication.AccountFragment"
+        android:label="fragment_account"
+        tools:layout="@layout/fragment_account" />
+</navigation>

@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">DChat</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="sign_in">sign in</string>
+    <string name="sign_up">sign up</string>
+    <string name="textView_login">Login to your account</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="forgot_password">Forgot password ?</string>
+    <string name="log_in">Log in</string>
+    <string name="create_new_account">Create New Account</string>
+    <string name="remember_me">Remember me</string>
+    <string name="create">create</string>
+    <string name="user_name">User Name</string>
+    <string name="status">Status</string>
+    <string name="edit_profile">Edit Profile</string>
+</resources>
