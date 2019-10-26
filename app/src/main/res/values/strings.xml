@@ -8,7 +8,7 @@
     <string name="textView_login">Login to your account</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
-    <string name="forgot_password">Forgot password ?</string>
+    <string name="forgot_password"><i>Forgot password ?</i></string>
     <string name="log_in">Log in</string>
     <string name="create_new_account">Create New Account</string>
     <string name="remember_me">Remember me</string>
@@ -16,4 +16,7 @@
     <string name="user_name">User Name</string>
     <string name="status">Status</string>
     <string name="edit_profile">Edit Profile</string>
+    <string name="sign_in_with_phone_number"><u>Sign in with phone number</u></string>
+    <string name="your_account">Your Account</string>
+    <string name="log_out">Log out</string>
 </resources>

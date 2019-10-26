@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/mainFragment"
-        android:name="com.example.dchatapplication.MainFragment"
+        android:name="com.example.dchatapplication.Fragment.MainFragment"
         android:label="fragment_main"
         tools:layout="@layout/fragment_main" >
         <action
@@ -19,12 +19,30 @@
     </fragment>
     <fragment
         android:id="@+id/signInFragment"
-        android:name="com.example.dchatapplication.SignInFragment"
+        android:name="com.example.dchatapplication.Fragment.SignInFragment"
         android:label="fragment_sign_in"
-        tools:layout="@layout/fragment_sign_in" />
+        tools:layout="@layout/fragment_sign_in" >
+        <action
+            android:id="@+id/action_signInFragment_to_signInWithNumberFragment"
+            app:destination="@id/signInWithNumberFragment" />
+    </fragment>
     <fragment
         android:id="@+id/signUpFragment"
-        android:name="com.example.dchatapplication.SignUpFragment"
+        android:name="com.example.dchatapplication.Fragment.SignUpFragment"
         android:label="fragment_sign_up"
-        tools:layout="@layout/fragment_sign_up" />
+        tools:layout="@layout/fragment_sign_up" >
+        <action
+            android:id="@+id/action_signUpFragment_to_sigUpWithNumberFragment"
+            app:destination="@id/sigUpWithNumberFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/signInWithNumberFragment"
+        android:name="com.example.dchatapplication.Fragment.SignInWithNumberFragment"
+        android:label="fragment_sign_in_with_number"
+        tools:layout="@layout/fragment_sign_in_with_number" />
+    <fragment
+        android:id="@+id/sigUpWithNumberFragment"
+        android:name="com.example.dchatapplication.Fragment.SigUpWithNumberFragment"
+        android:label="fragment_sig_up_with_number"
+        tools:layout="@layout/fragment_sig_up_with_number" />
 </navigation>

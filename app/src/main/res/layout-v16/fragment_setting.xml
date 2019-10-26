@@ -12,6 +12,7 @@
         android:textColor="@color/black"
         android:drawablePadding="10dp"
         android:padding="10dp"
+        android:textSize="24sp"
         android:fontFamily="@font/famosalightdemo"
         android:id="@+id/setting_tv_account"
         android:layout_width="match_parent"

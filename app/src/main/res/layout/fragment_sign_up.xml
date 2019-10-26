@@ -5,57 +5,42 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".SignUpFragment">
+    android:gravity="center"
+    tools:context=".Fragment.SignUpFragment">
 
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_weight="1"
-        android:weightSum="4"
-        android:layout_height="match_parent"
-        android:orientation="vertical" >
-
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_marginTop="10dp"
-            android:layout_weight="3"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:src="@drawable/ic_sign_up" />
 
         <TextView
-            android:id="@+id/textView3"
+            android:id="@+id/tv_number"
+            android:layout_marginBottom="20dp"
             android:textColor="@color/black"
             android:textSize="24sp"
             android:textStyle="bold"
             android:gravity="center"
-            android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/create_new_account" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_weight="1"
-        android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical" >
 
         <EditText
             android:id="@+id/sig_up_user_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
+            android:background="@drawable/rounded_border_edittext"
+            android:padding="10dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
+            android:layout_marginBottom="10dp"
             android:hint="@string/user_name"
             android:inputType="textPersonName" />
 
         <EditText
             android:id="@+id/sign_up_email"
+            android:background="@drawable/rounded_border_edittext"
+            android:padding="10dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
+            android:layout_marginBottom="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -64,6 +49,9 @@
 
         <EditText
             android:id="@+id/sign_up_password"
+            android:background="@drawable/rounded_border_edittext"
+            android:padding="10dp"
+            android:layout_marginBottom="10dp"
             android:layout_marginRight="20dp"
             android:layout_marginLeft="20dp"
             android:layout_width="match_parent"
@@ -78,16 +66,26 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
+            android:layout_marginBottom="10dp"
             android:checked="true"
             android:text="@string/remember_me" />
 
         <Button
             android:id="@+id/sign_up_button_create"
+            android:background="@drawable/custom_button"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
             android:text="@string/create" />
 
-    </LinearLayout>
+    <TextView
+        android:id="@+id/tv_sign_up_number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textStyle="italic"
+        android:text="Sign up with phone number" />
+
 </LinearLayout>

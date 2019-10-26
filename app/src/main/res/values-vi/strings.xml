@@ -15,4 +15,5 @@
     <string name="edit_profile">Chỉnh sửa Profile của bạn</string>
     <string name="status">Hôm nay bạn thế nào ?</string>
     <string name="user_name">Nick Name của bạn</string>
+    <string name="sign_in_with_phone_number">Đăng nhập bằng số điện thoại</string>
 </resources>

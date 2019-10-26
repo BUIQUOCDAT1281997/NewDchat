@@ -1,6 +1,7 @@
-package com.example.dchatapplication;
+package com.example.dchatapplication.Fragment;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,13 +14,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.dchatapplication.R;
+import com.example.dchatapplication.Activity.StartActivity;
+import com.google.firebase.auth.FirebaseAuth;
+
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class SettingFragment extends Fragment implements View.OnClickListener{
 
-private NavController navController;
+    private NavController navController;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -33,6 +38,7 @@ private NavController navController;
         super.onViewCreated(view, savedInstanceState);
         navController = Navigation.findNavController(view);
         view.findViewById(R.id.setting_tv_account).setOnClickListener(this);
+        view.findViewById(R.id.setting_tv_log_out).setOnClickListener(this);
     }
 
     @Override
@@ -40,5 +46,10 @@ private NavController navController;
         int id = v.getId();
         if (id == R.id.setting_tv_account)
             navController.navigate(R.id.action_menu_setting_to_accountFragment);
+        if (id == R.id.setting_tv_log_out){
+            FirebaseAuth.getInstance().signOut();
+            startActivity(new Intent(getActivity(), StartActivity.class));
+            getActivity().finish();
+        }
     }
 }

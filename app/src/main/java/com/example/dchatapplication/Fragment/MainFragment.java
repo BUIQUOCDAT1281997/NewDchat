@@ -1,4 +1,4 @@
-package com.example.dchatapplication;
+package com.example.dchatapplication.Fragment;
 
 
 import android.os.Bundle;
@@ -12,6 +12,8 @@ import androidx.navigation.Navigation;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.example.dchatapplication.R;
 
 
 /**
