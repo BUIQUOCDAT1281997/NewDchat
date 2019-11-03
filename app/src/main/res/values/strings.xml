@@ -19,4 +19,5 @@
     <string name="sign_in_with_phone_number"><u>Sign in with phone number</u></string>
     <string name="your_account">Your Account</string>
     <string name="log_out">Log out</string>
+    <string name="search">Search</string>
 </resources>

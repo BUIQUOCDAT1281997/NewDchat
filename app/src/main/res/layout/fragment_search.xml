@@ -8,11 +8,27 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_all_user"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="16dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
         android:scrollbars="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/search_friends" />
+
+    <EditText
+        android:id="@+id/search_friends"
+        android:drawableLeft="@drawable/ic_search_24dp"
+        android:drawablePadding="@dimen/padding_round_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="@string/search"
+        android:padding="@dimen/padding_round_text"
+        android:layout_margin="@dimen/margin_vertical"
+        android:background="@drawable/rounded_border_edittext"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

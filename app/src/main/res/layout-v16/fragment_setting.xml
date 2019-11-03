@@ -13,7 +13,7 @@
         android:drawablePadding="10dp"
         android:padding="10dp"
         android:textSize="24sp"
-        android:fontFamily="@font/famosalightdemo"
+        android:fontFamily="@font/font_dep"
         android:id="@+id/setting_tv_account"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -23,7 +23,7 @@
         android:id="@+id/setting_tv_log_out"
         android:textColor="@color/black"
         android:padding="10dp"
-        android:fontFamily="@font/famosalightdemo"
+        android:fontFamily="@font/font_dep"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/log_out" />

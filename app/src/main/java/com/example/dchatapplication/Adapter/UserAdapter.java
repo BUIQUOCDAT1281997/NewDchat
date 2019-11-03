@@ -79,8 +79,6 @@ public class UserAdapter extends RecyclerView .Adapter<UserAdapter.UserViewHolde
 
     @Override
     public int getItemCount() {
-        if (mDataAllUser.size()>100){
-            return 100;
-        }else return mDataAllUser.size();
+       return mDataAllUser.size();
     }
 }

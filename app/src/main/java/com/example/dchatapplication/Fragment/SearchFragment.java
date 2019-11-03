@@ -25,6 +25,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -61,7 +62,7 @@ public class SearchFragment extends Fragment {
         return rootView;
     }
 
-    private void readAllUser(){
+    private void readAllUser() {
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
 
@@ -69,13 +70,15 @@ public class SearchFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 listUser.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     User user = snapshot.getValue(User.class);
-                    if (!user.getId().equals(firebaseUser.getUid())){
+                    if (!user.getId().equals(firebaseUser.getUid())) {
                         listUser.add(user);
                     }
                 }
-                mAdapter = new UserAdapter(listUser,getContext());
+
+                Collections.shuffle(listUser);
+                mAdapter = new UserAdapter(listUser, getContext());
                 recyclerView.setAdapter(mAdapter);
             }
 

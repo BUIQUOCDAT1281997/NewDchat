@@ -5,7 +5,13 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"    tools:context=".Fragment.SignInFragment">
+    android:gravity="center"
+    tools:context=".Fragment.SignInFragment">
+
+        <include
+            android:id="@+id/llProgressBar_sign_in"
+            android:visibility="gone"
+            layout="@layout/progress_bar"/>
 
 
         <TextView

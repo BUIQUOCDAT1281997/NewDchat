@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.dchatapplication.R;
@@ -30,9 +31,12 @@ import com.google.firebase.auth.FirebaseAuth;
  */
 public class SignInFragment extends Fragment {
 
-    private EditText textEmail , textPassword;
+    private EditText textEmail, textPassword;
     private Button btnLogin;
     private NavController navController;
+
+    private LinearLayout llProgressBar;
+
 
     //Firebase
     private FirebaseAuth auth;
@@ -48,7 +52,7 @@ public class SignInFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        navController= Navigation.findNavController(view);
+        navController = Navigation.findNavController(view);
         view.findViewById(R.id.sign_in_with_number_phone).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -65,7 +69,7 @@ public class SignInFragment extends Fragment {
                 String strPassword = textPassword.getText().toString();
 
                 if (TextUtils.isEmpty(strEmail) || TextUtils.isEmpty(strPassword))
-                    Toast.makeText(getActivity(),"All fileds are required", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "All fileds are required", Toast.LENGTH_LONG).show();
                 else
                     loginToAccount(strEmail, strPassword);
             }
@@ -73,6 +77,7 @@ public class SignInFragment extends Fragment {
     }
 
     private void initView(View view) {
+        llProgressBar = view.findViewById(R.id.llProgressBar_sign_in);
         textEmail = view.findViewById(R.id.sign_in_email);
         textPassword = view.findViewById(R.id.sign_in_password);
         btnLogin = view.findViewById(R.id.sign_in_button);
@@ -81,14 +86,22 @@ public class SignInFragment extends Fragment {
         auth = FirebaseAuth.getInstance();
     }
 
-    private void loginToAccount(String email,String Password){
+    private void loginToAccount(String email, String Password) {
+
+        llProgressBar.setVisibility(View.VISIBLE);
+
         auth.signInWithEmailAndPassword(email, Password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()){
-                    ((StartActivity)getActivity()).toMainActivity();
-                }else
-                    Toast.makeText(getActivity(),"Authentication failed", Toast.LENGTH_LONG).show();
+                if (task.isSuccessful()) {
+                    llProgressBar.setVisibility(View.GONE);
+                    ((StartActivity) getActivity()).toMainActivity();
+                } else {
+                    llProgressBar.setVisibility(View.GONE);
+                    Toast
+                            .makeText(getActivity(), "Authentication failed", Toast.LENGTH_LONG)
+                            .show();
+                }
             }
         });
     }

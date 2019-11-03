@@ -16,4 +16,7 @@
     <string name="status">Hôm nay bạn thế nào ?</string>
     <string name="user_name">Nick Name của bạn</string>
     <string name="sign_in_with_phone_number">Đăng nhập bằng số điện thoại</string>
+    <string name="log_out">Đăng xuất</string>
+    <string name="search">Tìm kiếm</string>
+    <string name="your_account">Xem trang cá nhân của bạn</string>
 </resources>
