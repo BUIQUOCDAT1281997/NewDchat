@@ -162,4 +162,28 @@ public class ChatActivity extends AppCompatActivity {
         });
 
     }
+
+    private void setOnOff(String onOff){
+        HashMap<String,Object> hashMap = new HashMap<>();
+        hashMap.put("onoroff",onOff);
+
+        DatabaseReference databaseReference = FirebaseDatabase
+                .getInstance()
+                .getReference("Users")
+                .child(firebaseUser.getUid());
+
+        databaseReference.updateChildren(hashMap);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setOnOff("online");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        setOnOff("offline");
+    }
 }

@@ -6,6 +6,15 @@ public class User {
     private String avatarURL;
     private String password;
     private String status;
+    private String onoroff;
+
+    public String getOnoroff() {
+        return onoroff;
+    }
+
+    public void setOnoroff(String onoroff) {
+        this.onoroff = onoroff;
+    }
 
     public String getId() {
         return id;

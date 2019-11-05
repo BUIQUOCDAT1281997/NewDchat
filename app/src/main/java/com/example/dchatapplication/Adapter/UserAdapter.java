@@ -28,12 +28,14 @@ public class UserAdapter extends RecyclerView .Adapter<UserAdapter.UserViewHolde
     // ViewHolder
     public class UserViewHolder extends RecyclerView.ViewHolder{
 
+        public CircleImageView dotOn;
         public CircleImageView imgUser;
         public TextView tvUserName, tvStatus;
 
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);
 
+            this.dotOn = itemView.findViewById(R.id.status_on_off);
             this.imgUser = itemView.findViewById(R.id.item_avatar_user);
             this.tvUserName = itemView.findViewById(R.id.item_user_name);
             this.tvStatus = itemView.findViewById(R.id.item_status);
@@ -63,6 +65,10 @@ public class UserAdapter extends RecyclerView .Adapter<UserAdapter.UserViewHolde
         }else
             holder.imgUser.setImageResource(R.drawable.pngtest);
 
+        //dots
+        if (user.getOnoroff().equals("online")){
+            holder.dotOn.setVisibility(View.VISIBLE);
+        } else holder.dotOn.setVisibility(View.GONE);
 
         holder.tvUserName.setText(user.getUserName());
         holder.tvStatus.setText(user.getStatus());

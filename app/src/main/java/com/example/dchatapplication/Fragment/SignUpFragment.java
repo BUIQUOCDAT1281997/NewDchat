@@ -106,6 +106,7 @@ public class SignUpFragment extends Fragment {
                     hashMap.put("password",password);
                     hashMap.put("avatarURL", "default");
                     hashMap.put("status","Today is good day");
+                    hashMap.put("onoroff","online");
 
                     reference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
