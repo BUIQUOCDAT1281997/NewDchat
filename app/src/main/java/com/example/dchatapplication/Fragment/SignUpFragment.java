@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.dchatapplication.R;
@@ -34,6 +35,7 @@ public class SignUpFragment extends Fragment {
     private EditText userName, email, password;
     private Button btnRegister;
     private NavController navController;
+    private LinearLayout llProgressBar;
 
     // Firebase
     private FirebaseAuth auth;
@@ -76,6 +78,7 @@ public class SignUpFragment extends Fragment {
     }
 
     private void initEditText(View view) {
+        llProgressBar = view.findViewById(R.id.llProgressBar_sign_up);
         userName = view.findViewById(R.id.sig_up_user_name);
         email = view.findViewById(R.id.sign_up_email);
         password = view.findViewById(R.id.sign_up_password);
@@ -84,6 +87,8 @@ public class SignUpFragment extends Fragment {
     }
 
     private void register(final String userName, String email, final String password){
+
+        llProgressBar.setVisibility(View.VISIBLE);
 
         auth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
@@ -100,7 +105,7 @@ public class SignUpFragment extends Fragment {
                     hashMap.put("userName",userName);
                     hashMap.put("password",password);
                     hashMap.put("avatarURL", "default");
-                    hashMap.put("status","Am Happy");
+                    hashMap.put("status","Today is good day");
 
                     reference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
@@ -110,14 +115,15 @@ public class SignUpFragment extends Fragment {
                             }
                         }
                     });
+                    llProgressBar.setVisibility(View.GONE);
 
                 }
                 else {
                     Toast.makeText(getActivity(), "You can't register woth this email or password",Toast.LENGTH_LONG).show();
+                    llProgressBar.setVisibility(View.GONE);
                 }
             }
         });
-
     }
 
     /**
