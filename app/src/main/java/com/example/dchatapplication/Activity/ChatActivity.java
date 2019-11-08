@@ -40,6 +40,9 @@ public class ChatActivity extends AppCompatActivity {
     private CircleImageView imgUser;
     private TextView useName;
 
+    //evenLister
+    private ValueEventListener eventListener;
+
     //FireBase
     private FirebaseUser firebaseUser;
     private DatabaseReference reference;
@@ -53,6 +56,8 @@ public class ChatActivity extends AppCompatActivity {
 
     private ImageView btn_send;
     private EditText texSend;
+
+    private String userIDFriend;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +81,7 @@ public class ChatActivity extends AppCompatActivity {
 
         //get data
         Intent intent = getIntent();
-        final String userIDFriend = intent.getStringExtra("userID");
+        userIDFriend = intent.getStringExtra("userID");
 
         // set Even click
         btn_send.setOnClickListener(new View.OnClickListener() {
@@ -94,14 +99,14 @@ public class ChatActivity extends AppCompatActivity {
         });
 
         // work with toolbar and read message
-        reference = FirebaseDatabase.getInstance().getReference("Users").child(userIDFriend);
-        reference.addValueEventListener(new ValueEventListener() {
+        DatabaseReference referenceForReadMessage = reference.child(userIDFriend);
+        referenceForReadMessage.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
                 useName.setText(user.getUserName());
                 if (!user.getAvatarURL().equals("default")){
-                    Glide.with(ChatActivity.this).load(user.getAvatarURL()).into(imgUser);
+                    Glide.with(getApplicationContext()).load(user.getAvatarURL()).into(imgUser);
                 }
 
                 readMessage(firebaseUser.getUid(),userIDFriend,user.getAvatarURL());
@@ -113,11 +118,16 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
+        seenMessage(userIDFriend);
+
     }
+
 
 
     private void initView() {
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        reference = FirebaseDatabase.getInstance().getReference("Users");
+        referenceFromChats = FirebaseDatabase.getInstance().getReference("Chats");
         btn_send = findViewById(R.id.button_send);
         texSend = findViewById(R.id.text_send);
         imgUser = findViewById(R.id.circle_view_chat);
@@ -128,18 +138,21 @@ public class ChatActivity extends AppCompatActivity {
 
     private void sendMessage(String sender, String receiver, String message){
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-        HashMap<String, String> hashMap = new HashMap<>();
+        HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("sender",sender);
         hashMap.put("receiver",receiver);
         hashMap.put("message",message);
+        hashMap.put("isSeen",false);
         reference.child("Chats").push().setValue(hashMap);
+
+        // gui neu khong co mang addOnComplete
     }
 
 
     private void readMessage(final String myId, final String userID, final String imageUrl){
         listData = new ArrayList<>();
 
-        referenceFromChats = FirebaseDatabase.getInstance().getReference("Chats");
+        DatabaseReference referenceFromChats = FirebaseDatabase.getInstance().getReference("Chats");
         referenceFromChats.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -175,6 +188,27 @@ public class ChatActivity extends AppCompatActivity {
         databaseReference.updateChildren(hashMap);
     }
 
+    private void seenMessage(final String userIDFriends){
+        eventListener = referenceFromChats.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    Chat chat = snapshot.getValue(Chat.class);
+                    if (chat.getReceiver().equals(firebaseUser.getUid())&&chat.getSender().equals(userIDFriends)){
+                        HashMap<String,Object> hashMap = new HashMap<>();
+                        hashMap.put("isSeen",true);
+                        snapshot.getRef().updateChildren(hashMap);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -184,6 +218,7 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        referenceFromChats.removeEventListener(eventListener);
         setOnOff("offline");
     }
 }

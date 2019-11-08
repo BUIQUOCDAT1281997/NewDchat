@@ -102,7 +102,7 @@ public class FriendsFragment extends Fragment {
                     }
                 }
 
-                mAdapter = new UserAdapter(listUser, getContext());
+                mAdapter = new UserAdapter(listUser, getContext(),true);
                 recyclerView.setAdapter(mAdapter);
             }
 

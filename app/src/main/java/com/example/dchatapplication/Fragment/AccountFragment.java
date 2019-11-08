@@ -80,7 +80,7 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
                 if (!user.getAvatarURL().equals("default")) {
 
                     try {
-                        Glide.with(getContext())
+                        Glide.with(getActivity().getApplicationContext())
                                 .load(user.getAvatarURL())
                                 .placeholder(R.drawable.ic_user)
                                 .into(imgUser);

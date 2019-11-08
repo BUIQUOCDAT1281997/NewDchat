@@ -9,12 +9,16 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import com.example.dchatapplication.Adapter.UserAdapter;
 import com.example.dchatapplication.R;
+import com.example.dchatapplication.StringUtils;
 import com.example.dchatapplication.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -22,6 +26,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -39,12 +44,32 @@ public class SearchFragment extends Fragment {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private List<User> listUser;
+    private EditText etSearch;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_search, container, false);
+
+        //search
+        etSearch = rootView.findViewById(R.id.search_friends_edit_text);
+        etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                searchUser(StringUtils.unAccent(charSequence.toString().toLowerCase()));
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
 
         //list user
         listUser = new ArrayList<>();
@@ -69,16 +94,46 @@ public class SearchFragment extends Fragment {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (etSearch.getText().toString().equals("")) {
+                    listUser.clear();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        User user = snapshot.getValue(User.class);
+                        if (!user.getId().equals(firebaseUser.getUid())) {
+                            listUser.add(user);
+                        }
+                    }
+
+                    Collections.shuffle(listUser);
+                    mAdapter = new UserAdapter(listUser, getContext(), false);
+                    recyclerView.setAdapter(mAdapter);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void searchUser(final String string) {
+        final FirebaseUser fuser = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference rf = FirebaseDatabase.getInstance().getReference("Users");
+
+        rf.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 listUser.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     User user = snapshot.getValue(User.class);
-                    if (!user.getId().equals(firebaseUser.getUid())) {
+                    String str = StringUtils.unAccent(user.getUserName().toLowerCase());
+                    if (str.startsWith(string)
+                            && !user.getId().equals(fuser.getUid())) {
                         listUser.add(user);
                     }
                 }
 
-                Collections.shuffle(listUser);
-                mAdapter = new UserAdapter(listUser, getContext());
+                mAdapter = new UserAdapter(listUser, getContext(), false);
                 recyclerView.setAdapter(mAdapter);
             }
 
@@ -87,6 +142,33 @@ public class SearchFragment extends Fragment {
 
             }
         });
+
+        /**
+         * Query query = FirebaseDatabase.getInstance().getReference("Users")
+         *                 .orderByChild("userName")
+         *                 .startAt(string)
+         *                 .endAt(string +"\uf8ff");
+         *
+         *         query.addValueEventListener(new ValueEventListener() {
+         *             @Override
+         *             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+         *                 listUser.clear();
+         *                 for (DataSnapshot snapshot :dataSnapshot.getChildren()){
+         *                     User user = snapshot.getValue(User.class);
+         *                     if (!user.getId().equals(firebaseUser.getUid())){
+         *                         listUser.add(user);
+         *                     }
+         *                 }
+         *                 mAdapter = new UserAdapter(listUser, getContext(),false);
+         *                 recyclerView.setAdapter(mAdapter);
+         *             }
+         *
+         *             @Override
+         *             public void onCancelled(@NonNull DatabaseError databaseError) {
+         *
+         *             }
+         *         });
+         */
     }
 
 }

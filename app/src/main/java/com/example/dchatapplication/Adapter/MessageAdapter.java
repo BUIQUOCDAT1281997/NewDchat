@@ -57,6 +57,15 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         if (!imageUrl.equals("default") && holder.circleImageView != null) {
             Glide.with(context).load(imageUrl).into(holder.circleImageView);
         }
+        if (position == mListData.size() - 1 && holder.circleImageView == null) {
+            if (chat.isSeen()) {
+                holder.tvSeen.setText("Seen");
+            } else {
+                holder.tvSeen.setText("wait");
+            }
+        } else if (holder.tvSeen != null) {
+            holder.tvSeen.setVisibility(View.GONE);
+        }
 
     }
 
@@ -69,11 +78,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
         public CircleImageView circleImageView;
         public TextView textView;
+        public TextView tvSeen;
 
         public MessageViewHolder(@NonNull View itemView) {
             super(itemView);
             circleImageView = itemView.findViewById(R.id.circle_view_item_chat);
             textView = itemView.findViewById(R.id.textView_item_chat);
+            tvSeen = itemView.findViewById(R.id.tv_seen);
         }
     }
 
