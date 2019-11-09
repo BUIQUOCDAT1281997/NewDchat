@@ -58,10 +58,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             Glide.with(context).load(imageUrl).into(holder.circleImageView);
         }
         if (position == mListData.size() - 1 && holder.circleImageView == null) {
-            if (chat.isSeen()) {
-                holder.tvSeen.setText("Seen");
+            if (chat.getIsSeen().equals("true")) {
+                holder.tvSeen.setText(context.getResources().getString(R.string.seen));
             } else {
-                holder.tvSeen.setText("wait");
+                holder.tvSeen.setText(context.getResources().getString(R.string.not_seen));
             }
         } else if (holder.tvSeen != null) {
             holder.tvSeen.setVisibility(View.GONE);

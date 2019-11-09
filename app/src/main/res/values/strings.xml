@@ -20,4 +20,6 @@
     <string name="your_account">Your Account</string>
     <string name="log_out">Log out</string>
     <string name="search">Search</string>
+    <string name="seen">Seen</string>
+    <string name="not_seen">wait</string>
 </resources>

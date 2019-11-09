@@ -5,9 +5,9 @@ public class Chat {
     private String sender;
     private String receiver;
     private String message;
-    private boolean isSeen;
+    private String isSeen;
 
-    public Chat(String sender, String receiver, String message, boolean isSeen) {
+    public Chat(String sender, String receiver, String message, String isSeen) {
         this.sender = sender;
         this.receiver = receiver;
         this.message = message;
@@ -18,12 +18,12 @@ public class Chat {
 
     }
 
-    public boolean isSeen() {
+    public String getIsSeen() {
         return isSeen;
     }
 
-    public void setSeen(boolean seen) {
-        isSeen = seen;
+    public void setIsSeen(String isSeen) {
+        this.isSeen = isSeen;
     }
 
     public String getSender() {

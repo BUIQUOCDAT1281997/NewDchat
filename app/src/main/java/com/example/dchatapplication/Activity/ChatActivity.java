@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.dchatapplication.Adapter.MessageAdapter;
 import com.example.dchatapplication.Chat;
+import com.example.dchatapplication.Notification.Token;
 import com.example.dchatapplication.R;
 import com.example.dchatapplication.User;
 import com.google.firebase.auth.FirebaseAuth;
@@ -50,7 +51,6 @@ public class ChatActivity extends AppCompatActivity {
 
 
     private RecyclerView recyclerView;
-    private RecyclerView.LayoutManager layoutManager;
     private List<Chat> listData;
     private MessageAdapter messageAdapter;
 
@@ -76,7 +76,8 @@ public class ChatActivity extends AppCompatActivity {
         //recyclerview
         recyclerView = findViewById(R.id.recycler_view_message);
         recyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(this);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+        layoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(layoutManager);
 
         //get data
@@ -142,17 +143,37 @@ public class ChatActivity extends AppCompatActivity {
         hashMap.put("sender",sender);
         hashMap.put("receiver",receiver);
         hashMap.put("message",message);
-        hashMap.put("isSeen",false);
+        hashMap.put("isSeen","false");
         reference.child("Chats").push().setValue(hashMap);
 
         // gui neu khong co mang addOnComplete
+
+        /**
+         *  final DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("ChatList")
+         *                 .child(firebaseUser.getUid())
+         *                 .child(userIDFriend);
+         *         chatRef.addListenerForSingleValueEvent(new ValueEventListener() {
+         *             @Override
+         *             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+         *                 if (!dataSnapshot.exists()){
+         *                     chatRef.child("id").setValue(userIDFriend);
+         *                 }
+         *             }
+         *
+         *             @Override
+         *             public void onCancelled(@NonNull DatabaseError databaseError) {
+         *
+         *             }
+         *         });
+         */
+
     }
 
 
     private void readMessage(final String myId, final String userID, final String imageUrl){
         listData = new ArrayList<>();
 
-        DatabaseReference referenceFromChats = FirebaseDatabase.getInstance().getReference("Chats");
+        referenceFromChats = FirebaseDatabase.getInstance().getReference("Chats");
         referenceFromChats.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -164,7 +185,7 @@ public class ChatActivity extends AppCompatActivity {
                         listData.add(chat);
                     }
                 }
-                messageAdapter= new MessageAdapter(listData,imageUrl,ChatActivity.this);
+                messageAdapter= new MessageAdapter(listData,imageUrl,getApplicationContext());
                 recyclerView.setAdapter(messageAdapter);
             }
 
@@ -173,7 +194,6 @@ public class ChatActivity extends AppCompatActivity {
 
             }
         });
-
     }
 
     private void setOnOff(String onOff){
@@ -196,7 +216,7 @@ public class ChatActivity extends AppCompatActivity {
                     Chat chat = snapshot.getValue(Chat.class);
                     if (chat.getReceiver().equals(firebaseUser.getUid())&&chat.getSender().equals(userIDFriends)){
                         HashMap<String,Object> hashMap = new HashMap<>();
-                        hashMap.put("isSeen",true);
+                        hashMap.put("isSeen","true");
                         snapshot.getRef().updateChildren(hashMap);
                     }
                 }
@@ -213,6 +233,12 @@ public class ChatActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         setOnOff("online");
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        seenMessage(userIDFriend);
     }
 
     @Override

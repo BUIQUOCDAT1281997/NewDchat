@@ -10,8 +10,11 @@ import android.os.Handler;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ProgressBar;
 
 import com.example.dchatapplication.R;
+import com.github.ybq.android.spinkit.sprite.Sprite;
+import com.github.ybq.android.spinkit.style.WanderingCubes;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -21,6 +24,10 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+
+        ProgressBar progressBar = findViewById(R.id.spin_kit);
+        Sprite doubleBounce = new WanderingCubes();
+        progressBar.setIndeterminateDrawable(doubleBounce);
 
         if (Build.VERSION.SDK_INT >= 21) {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE |

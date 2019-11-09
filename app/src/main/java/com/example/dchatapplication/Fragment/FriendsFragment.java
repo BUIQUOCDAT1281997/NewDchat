@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.dchatapplication.Activity.MainActivity;
 import com.example.dchatapplication.Adapter.UserAdapter;
 import com.example.dchatapplication.Chat;
 import com.example.dchatapplication.R;

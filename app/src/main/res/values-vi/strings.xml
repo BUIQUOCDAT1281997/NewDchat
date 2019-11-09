@@ -19,4 +19,6 @@
     <string name="log_out">Đăng xuất</string>
     <string name="search">Tìm kiếm</string>
     <string name="your_account">Xem trang cá nhân của bạn</string>
+    <string name="not_seen">Chưa xem</string>
+    <string name="seen">Đã xem</string>
 </resources>
