@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -40,6 +41,10 @@ public class SignUpFragment extends Fragment {
     // Firebase
     private FirebaseAuth auth;
     private DatabaseReference reference;
+    private DatabaseReference referenceFromOnline;
+
+    //data online/offline
+    private HashMap<String, String> hm;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -51,7 +56,7 @@ public class SignUpFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        navController= Navigation.findNavController(view);
+        navController = Navigation.findNavController(view);
         view.findViewById(R.id.tv_sign_up_number).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -69,10 +74,12 @@ public class SignUpFragment extends Fragment {
                 String strEmail = email.getText().toString();
                 String strPassword = password.getText().toString();
 
-                if (TextUtils.isEmpty(strUserName) || TextUtils.isEmpty(strEmail) || TextUtils.isEmpty(strPassword)){
-                    Toast.makeText(getActivity(),"All fileds are required", Toast.LENGTH_LONG).show();
+                if (TextUtils.isEmpty(strUserName) || TextUtils.isEmpty(strEmail) || TextUtils.isEmpty(strPassword)) {
+                    Toast.makeText(getActivity(), getResources()
+                            .getString(R.string.All_fields_are_required), Toast.LENGTH_LONG)
+                            .show();
                 } else
-                    register(userName.getText().toString(),email.getText().toString(),password.getText().toString());
+                    register(userName.getText().toString(), email.getText().toString(), password.getText().toString());
             }
         });
     }
@@ -86,14 +93,14 @@ public class SignUpFragment extends Fragment {
         auth = FirebaseAuth.getInstance();
     }
 
-    private void register(final String userName, String email, final String password){
+    private void register(final String userName, String email, final String password) {
 
         llProgressBar.setVisibility(View.VISIBLE);
 
-        auth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()){
+                if (task.isSuccessful()) {
                     FirebaseUser firebaseUser = auth.getCurrentUser();
                     assert firebaseUser != null;
                     String userID = firebaseUser.getUid();
@@ -101,26 +108,39 @@ public class SignUpFragment extends Fragment {
                     reference = FirebaseDatabase.getInstance().getReference("Users").child(userID);
 
                     HashMap<String, String> hashMap = new HashMap<>();
-                    hashMap.put("id",userID);
-                    hashMap.put("userName",userName);
-                    hashMap.put("password",password);
+                    hashMap.put("id", userID);
+                    hashMap.put("userName", userName);
+                    hashMap.put("password", password);
                     hashMap.put("avatarURL", "default");
-                    hashMap.put("status","Today is good day");
-                    hashMap.put("onoroff","online");
+                    hashMap.put("status", "Today is good day");
+                    //hashMap.put("onoroff","online");
+
+                    referenceFromOnline = FirebaseDatabase.getInstance().getReference("Status").child(userID);
+
+                    hm = new HashMap<>();
+                    hm.put("online", "online");
+                    hm.put("id",userID);
 
                     reference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()){
-                                ((StartActivity)getActivity()).toMainActivity();
+                            if (task.isSuccessful()) {
+
+                                referenceFromOnline.setValue(hm).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            ((StartActivity) getActivity()).toMainActivity();
+                                        }
+                                    }
+                                });
                             }
                         }
                     });
                     llProgressBar.setVisibility(View.GONE);
 
-                }
-                else {
-                    Toast.makeText(getActivity(), "You can't register woth this email or password",Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getActivity(), "You can't register wrong this email or password", Toast.LENGTH_LONG).show();
                     llProgressBar.setVisibility(View.GONE);
                 }
             }

@@ -1,4 +1,4 @@
-package com.example.dchatapplication;
+package com.example.dchatapplication.Other;
 
 import java.text.Normalizer;
 import java.util.regex.Pattern;

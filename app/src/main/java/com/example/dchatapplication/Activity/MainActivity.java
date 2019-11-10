@@ -44,7 +44,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void initFireBase() {
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
+        //reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
+        reference = FirebaseDatabase.getInstance().getReference("Status").child(firebaseUser.getUid());
+
     }
 
     @Override
@@ -54,7 +56,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void setOnOff(String onOff){
         HashMap<String,Object> hashMap = new HashMap<>();
-        hashMap.put("onoroff",onOff);
+        hashMap.put("online",onOff);
+        //        hashMap.put("onorof",onOff);
+
 
         reference.updateChildren(hashMap);
     }

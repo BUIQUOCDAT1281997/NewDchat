@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.dchatapplication.Activity.ProfileActivity;
 import com.example.dchatapplication.R;
 import com.example.dchatapplication.Activity.StartActivity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -24,7 +25,6 @@ import com.google.firebase.auth.FirebaseAuth;
  */
 public class SettingFragment extends Fragment implements View.OnClickListener{
 
-    private NavController navController;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -36,7 +36,6 @@ public class SettingFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        navController = Navigation.findNavController(view);
         view.findViewById(R.id.setting_tv_account).setOnClickListener(this);
         view.findViewById(R.id.setting_tv_log_out).setOnClickListener(this);
     }
@@ -44,8 +43,10 @@ public class SettingFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        if (id == R.id.setting_tv_account)
-            navController.navigate(R.id.action_menu_setting_to_accountFragment);
+        if (id == R.id.setting_tv_account){
+            Intent intent = new Intent(getContext(), ProfileActivity.class);
+            getActivity().startActivity(intent);
+        }
         if (id == R.id.setting_tv_log_out){
             FirebaseAuth.getInstance().signOut();
             startActivity(new Intent(getActivity(), StartActivity.class));

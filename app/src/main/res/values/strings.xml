@@ -22,4 +22,6 @@
     <string name="search">Search</string>
     <string name="seen">Seen</string>
     <string name="not_seen">wait</string>
+    <string name="Authentication_failed">Authentication failed</string>
+    <string name="All_fields_are_required">All fields are required</string>
 </resources>

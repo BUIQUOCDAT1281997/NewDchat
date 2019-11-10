@@ -12,11 +12,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.dchatapplication.Activity.MainActivity;
 import com.example.dchatapplication.Adapter.UserAdapter;
-import com.example.dchatapplication.Chat;
+import com.example.dchatapplication.Other.Chat;
+import com.example.dchatapplication.Other.ChatList;
 import com.example.dchatapplication.R;
-import com.example.dchatapplication.User;
+import com.example.dchatapplication.Other.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -26,7 +26,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -41,7 +40,7 @@ public class FriendsFragment extends Fragment {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private List<User> listUser;
-    private List<String> listID;
+    private List<ChatList> listID;
 
     //Firebase
     private FirebaseUser firebaseUser;
@@ -49,8 +48,8 @@ public class FriendsFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        rootView =inflater.inflate(R.layout.fragment_friends, container, false);
+                             final Bundle savedInstanceState) {
+        rootView = inflater.inflate(R.layout.fragment_friends, container, false);
 
         //init view
         initView(rootView);
@@ -61,24 +60,17 @@ public class FriendsFragment extends Fragment {
         layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
 
-        // app data to listUser
+        // app data to ListFirends
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 listID.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    Chat chat = snapshot.getValue(Chat.class);
-
-                    String currentID = firebaseUser.getUid();
-                    if (chat.getReceiver().equals(currentID)&& !listID.contains(chat.getSender())){
-                        listID.add(chat.getSender());
-                    }
-                    if (chat.getSender().equals(currentID)&&!listID.contains(chat.getReceiver())){
-                        listID.add(chat.getReceiver());
-                    }
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    ChatList chatList = snapshot.getValue(ChatList.class);
+                    listID.add(chatList);
                 }
 
-                writeToListUser();
+                addUserToList();
             }
 
             @Override
@@ -87,23 +79,27 @@ public class FriendsFragment extends Fragment {
             }
         });
 
+
         return rootView;
     }
 
-    private void writeToListUser() {
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users");
-        databaseReference.addValueEventListener(new ValueEventListener() {
+    private void addUserToList() {
+        DatabaseReference drf = FirebaseDatabase.getInstance().getReference("Users");
+        drf.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 listUser.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     User user = snapshot.getValue(User.class);
-                    if (listID.contains(user.getId())){
-                        listUser.add(user);
+                    for (ChatList chatList : listID) {
+                        if (chatList.getId().equals(user.getId())) {
+                            listUser.add(user);
+                            break;
+                        }
                     }
                 }
 
-                mAdapter = new UserAdapter(listUser, getContext(),true);
+                mAdapter = new UserAdapter(listUser, getContext(), true);
                 recyclerView.setAdapter(mAdapter);
             }
 
@@ -114,6 +110,7 @@ public class FriendsFragment extends Fragment {
         });
     }
 
+
     private void initView(View rootView) {
         //list user
         listUser = new ArrayList<>();
@@ -121,7 +118,7 @@ public class FriendsFragment extends Fragment {
 
         //FireBase
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        reference = FirebaseDatabase.getInstance().getReference("Chats");
+        reference = FirebaseDatabase.getInstance().getReference("ChatList").child(firebaseUser.getUid());
     }
 
 }

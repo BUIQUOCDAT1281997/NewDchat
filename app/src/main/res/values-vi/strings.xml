@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">DchatApplication</string>
+    <string name="app_name">Dchat</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="sign_in">Đăng nhập</string>
     <string name="sign_up">Đăng ký</string>
@@ -14,11 +14,13 @@
     <string name="textView_login">Đăng nhập</string>
     <string name="edit_profile">Chỉnh sửa Profile của bạn</string>
     <string name="status">Hôm nay bạn thế nào ?</string>
-    <string name="user_name">Nick Name của bạn</string>
+    <string name="user_name">Nhập tên của bạn</string>
     <string name="sign_in_with_phone_number">Đăng nhập bằng số điện thoại</string>
     <string name="log_out">Đăng xuất</string>
     <string name="search">Tìm kiếm</string>
     <string name="your_account">Xem trang cá nhân của bạn</string>
     <string name="not_seen">Chưa xem</string>
     <string name="seen">Đã xem</string>
+    <string name="Authentication_failed">Email hoặc mật khẩu không chính xác :(</string>
+    <string name="All_fields_are_required">Không mục nào được để trống :)</string>
 </resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DChat</string>
+    <string name="email">Почта</string>
+    <string name="password">Пароль</string>
+    <string name="search">Найти</string>
+    <string name="user_name">Твое имя</string>
+    <string name="Authentication_failed">Почта и пароль не верны</string>
+</resources>

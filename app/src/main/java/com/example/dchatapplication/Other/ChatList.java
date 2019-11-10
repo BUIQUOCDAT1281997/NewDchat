@@ -1,4 +1,4 @@
-package com.example.dchatapplication;
+package com.example.dchatapplication.Other;
 
 public class ChatList {
     private String id;

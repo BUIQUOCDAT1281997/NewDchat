@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,9 +12,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.dchatapplication.Activity.ChatActivity;
-import com.example.dchatapplication.Chat;
+import com.example.dchatapplication.Other.Chat;
+import com.example.dchatapplication.Other.Status;
 import com.example.dchatapplication.R;
-import com.example.dchatapplication.User;
+import com.example.dchatapplication.Other.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -77,9 +77,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
             holder.imgUser.setImageResource(R.drawable.pngtest);
 
         //dots
-        if (user.getOnoroff().equals("online")) {
-            holder.dotOn.setVisibility(View.VISIBLE);
-        } else holder.dotOn.setVisibility(View.GONE);
+        //if (user.getOnoroff().equals("online")) {
+         //   holder.dotOn.setVisibility(View.VISIBLE);
+       // } else holder.dotOn.setVisibility(View.GONE);
+
+        setColorForDot(holder.dotOn, user.getId());
 
         //textView
         holder.tvUserName.setText(user.getUserName());
@@ -138,6 +140,30 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                     imgLsatMessage.setText("No Message");
                 }
                 theLastMessage = "default";
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void setColorForDot(final CircleImageView dotOn, final String userID) {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Status");
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    Status status = snapshot.getValue(Status.class);
+                    if (status.getId().equals(userID)){
+                        if (status.getOnline().equals("online")){
+                            dotOn.setVisibility(View.VISIBLE);
+                        }else {
+                            dotOn.setVisibility(View.GONE);
+                        }
+                    }
+                }
             }
 
             @Override

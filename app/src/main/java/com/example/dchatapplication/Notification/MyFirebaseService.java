@@ -11,7 +11,7 @@ public class MyFirebaseService extends FirebaseMessagingService {
 
     @Override
     public void onNewToken(String s) {
-        sendRegistrationToServer(s);
+        //sendRegistrationToServer(s);
     }
 
     private void sendRegistrationToServer(String s) {

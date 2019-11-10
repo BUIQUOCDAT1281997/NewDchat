@@ -1,4 +1,4 @@
-package com.example.dchatapplication;
+package com.example.dchatapplication.Other;
 
 public class User {
     private String id;
@@ -6,14 +6,16 @@ public class User {
     private String avatarURL;
     private String password;
     private String status;
-    private String onoroff;
 
-    public String getOnoroff() {
-        return onoroff;
+    public User(String id, String userName, String avatarURL, String password, String status) {
+        this.id = id;
+        this.userName = userName;
+        this.avatarURL = avatarURL;
+        this.password = password;
+        this.status = status;
     }
 
-    public void setOnoroff(String onoroff) {
-        this.onoroff = onoroff;
+    public User() {
     }
 
     public String getId() {

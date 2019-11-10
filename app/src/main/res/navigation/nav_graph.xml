@@ -25,6 +25,9 @@
         <action
             android:id="@+id/action_signInFragment_to_signInWithNumberFragment"
             app:destination="@id/signInWithNumberFragment" />
+        <action
+            android:id="@+id/action_signInFragment_to_resetPasswordFragment"
+            app:destination="@id/resetPasswordFragment" />
     </fragment>
     <fragment
         android:id="@+id/signUpFragment"
@@ -45,4 +48,15 @@
         android:name="com.example.dchatapplication.Fragment.SigUpWithNumberFragment"
         android:label="fragment_sig_up_with_number"
         tools:layout="@layout/fragment_sig_up_with_number" />
+    <fragment
+        android:id="@+id/resetPasswordFragment"
+        android:name="com.example.dchatapplication.ResetPasswordFragment"
+        android:label="fragment_reset_password"
+        tools:layout="@layout/fragment_reset_password" >
+        <action
+            android:id="@+id/action_resetPasswordFragment_to_signInFragment"
+            app:destination="@id/signInFragment"
+            app:popUpTo="@+id/signInFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
 </navigation>

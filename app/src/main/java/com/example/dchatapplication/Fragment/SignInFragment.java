@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.dchatapplication.R;
@@ -29,10 +30,9 @@ import com.google.firebase.auth.FirebaseAuth;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class SignInFragment extends Fragment {
+public class SignInFragment extends Fragment implements View.OnClickListener {
 
     private EditText textEmail, textPassword;
-    private Button btnLogin;
     private NavController navController;
 
     private LinearLayout llProgressBar;
@@ -52,38 +52,51 @@ public class SignInFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        navController = Navigation.findNavController(view);
-        view.findViewById(R.id.sign_in_with_number_phone).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                navController.navigate(R.id.action_signInFragment_to_signInWithNumberFragment);
-            }
-        });
+
         initView(view);
 
-        //Button
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String strEmail = textEmail.getText().toString();
-                String strPassword = textPassword.getText().toString();
+        view.findViewById(R.id.sign_in_with_number_phone).setOnClickListener(this);
+        view.findViewById(R.id.sign_in_forgot).setOnClickListener(this);
+        view.findViewById(R.id.sign_in_button).setOnClickListener(this);
 
-                if (TextUtils.isEmpty(strEmail) || TextUtils.isEmpty(strPassword))
-                    Toast.makeText(getActivity(), "All fileds are required", Toast.LENGTH_LONG).show();
-                else
-                    loginToAccount(strEmail, strPassword);
-            }
-        });
     }
 
     private void initView(View view) {
+
+        navController = Navigation.findNavController(view);
         llProgressBar = view.findViewById(R.id.llProgressBar_sign_in);
         textEmail = view.findViewById(R.id.sign_in_email);
         textPassword = view.findViewById(R.id.sign_in_password);
-        btnLogin = view.findViewById(R.id.sign_in_button);
 
-        //Firebase
         auth = FirebaseAuth.getInstance();
+    }
+
+    @Override
+    public void onClick(View view) {
+        int idView = view.getId();
+
+        switch (idView) {
+            case R.id.sign_in_with_number_phone: {
+                navController.navigate(R.id.action_signInFragment_to_signInWithNumberFragment);
+                break;
+            }
+            case R.id.sign_in_forgot: {
+                navController.navigate(R.id.action_signInFragment_to_resetPasswordFragment);
+                break;
+            }
+            case R.id.sign_in_button: {
+                String strEmail = textEmail.getText().toString();
+                String strPassword = textPassword.getText().toString();
+
+                if (TextUtils.isEmpty(strEmail) || TextUtils.isEmpty(strPassword)) {
+                    Toast.makeText(getActivity(), getResources().getString(R.string.All_fields_are_required), Toast.LENGTH_LONG).show();
+                } else {
+                    loginToAccount(strEmail, strPassword);
+                }
+
+                break;
+            }
+        }
     }
 
     private void loginToAccount(String email, String Password) {
@@ -94,16 +107,14 @@ public class SignInFragment extends Fragment {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                    llProgressBar.setVisibility(View.GONE);
                     ((StartActivity) getActivity()).toMainActivity();
                 } else {
-                    llProgressBar.setVisibility(View.GONE);
                     Toast
-                            .makeText(getActivity(), "Authentication failed", Toast.LENGTH_LONG)
+                            .makeText(getActivity(), getResources().getString(R.string.Authentication_failed), Toast.LENGTH_LONG)
                             .show();
                 }
+                llProgressBar.setVisibility(View.GONE);
             }
         });
     }
-
 }
