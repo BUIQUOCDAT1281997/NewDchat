@@ -24,7 +24,9 @@
         <activity
             android:name=".Activity.ChatActivity"
             android:parentActivityName=".Activity.MainActivity" />
-        <activity android:name=".Activity.MainActivity" />
+        <activity
+            android:name=".Activity.MainActivity"
+            android:windowSoftInputMode="adjustPan" />
         <activity android:name=".Activity.StartActivity"></activity>
 
         <service android:name=".Notification.MyFirebaseService">

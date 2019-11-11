@@ -82,6 +82,11 @@ public class SignUpFragment extends Fragment {
                     register(userName.getText().toString(), email.getText().toString(), password.getText().toString());
             }
         });
+
+        //hide soft keyboard on android after clicking outside EditText
+        hideKeyboard(userName);
+        hideKeyboard(email);
+        hideKeyboard(password);
     }
 
     private void initEditText(View view) {
@@ -142,6 +147,17 @@ public class SignUpFragment extends Fragment {
                 } else {
                     Toast.makeText(getActivity(), "You can't register wrong this email or password", Toast.LENGTH_LONG).show();
                     llProgressBar.setVisibility(View.GONE);
+                }
+            }
+        });
+    }
+
+    private void hideKeyboard(EditText editText){
+        editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (!b){
+                    ((StartActivity)getActivity()).hideKeyboard(view);
                 }
             }
         });

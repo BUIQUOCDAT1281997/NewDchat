@@ -2,8 +2,11 @@ package com.example.dchatapplication.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import com.example.dchatapplication.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,5 +29,11 @@ public class StartActivity extends AppCompatActivity {
     public void toMainActivity(){
         startActivity(new Intent(this,MainActivity.class));
         finish();
+    }
+
+    //hind keyboard
+    public void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

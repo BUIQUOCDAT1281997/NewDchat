@@ -34,7 +34,7 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity implements View.OnClickListener {
 
     private CircleImageView imgUser;
     private TextView useName;
@@ -117,6 +117,8 @@ public class ChatActivity extends AppCompatActivity {
         });
 
         seenMessage(userIDFriend);
+
+        imgUser.setOnClickListener(this);
 
     }
 
@@ -241,5 +243,12 @@ public class ChatActivity extends AppCompatActivity {
         super.onPause();
         referenceFromChats.removeEventListener(eventListener);
         setOnOff("offline");
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (view.getId()==R.id.circle_view_chat){
+            Toast.makeText(this,"Vao profile cua id nay", Toast.LENGTH_LONG).show();
+        }
     }
 }

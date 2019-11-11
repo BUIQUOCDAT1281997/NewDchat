@@ -1,6 +1,7 @@
 package com.example.dchatapplication.Fragment;
 
 
+import android.app.Activity;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,6 +14,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -58,6 +60,24 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
         view.findViewById(R.id.sign_in_with_number_phone).setOnClickListener(this);
         view.findViewById(R.id.sign_in_forgot).setOnClickListener(this);
         view.findViewById(R.id.sign_in_button).setOnClickListener(this);
+
+        //hide soft keyboard on android after clicking outside EditText
+        textEmail.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (!b){
+                    ((StartActivity)getActivity()).hideKeyboard(view);
+                }
+            }
+        });
+        textPassword.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (!b){
+                    ((StartActivity)getActivity()).hideKeyboard(view);
+                }
+            }
+        });
 
     }
 
@@ -117,4 +137,5 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
             }
         });
     }
+
 }

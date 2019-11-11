@@ -62,7 +62,7 @@
             android:background="@drawable/rounded_border_edittext"
             android:ems="10"
             android:hint="Aa..."
-            android:inputType="textPersonName"
+            android:inputType="text"
             android:padding="10dp" />
 
         <ImageView
