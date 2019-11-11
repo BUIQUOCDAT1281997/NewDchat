@@ -23,4 +23,5 @@
     <string name="seen">Đã xem</string>
     <string name="Authentication_failed">Email hoặc mật khẩu không chính xác :(</string>
     <string name="All_fields_are_required">Không mục nào được để trống :)</string>
+    <string name="please_wait">Hãy đợi giây lát...</string>
 </resources>

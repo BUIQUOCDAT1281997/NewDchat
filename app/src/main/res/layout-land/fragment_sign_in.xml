@@ -6,6 +6,10 @@
     android:layout_height="match_parent"
     tools:context=".Fragment.SignInFragment">
 
+        <include
+            android:id="@+id/llProgressBar_sign_in"
+            android:visibility="gone"
+            layout="@layout/progress_bar"/>
 
         <ScrollView
             android:layout_width="0dp"

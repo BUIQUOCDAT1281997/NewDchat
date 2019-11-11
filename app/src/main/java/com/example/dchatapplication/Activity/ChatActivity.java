@@ -3,6 +3,7 @@ package com.example.dchatapplication.Activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -248,7 +249,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View view) {
         if (view.getId()==R.id.circle_view_chat){
-            Toast.makeText(this,"Vao profile cua id nay", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(ChatActivity.this, ProfileFriendActivity.class);
+            intent.putExtra("userID",userIDFriend);
+            startActivity(intent);
         }
     }
 }

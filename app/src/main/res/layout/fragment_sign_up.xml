@@ -63,16 +63,6 @@
             android:hint="@string/password"
             android:inputType="textPassword" />
 
-        <CheckBox
-            android:id="@+id/sign_up_checkBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginBottom="10dp"
-            android:checked="true"
-            android:text="@string/remember_me" />
-
         <Button
             android:id="@+id/sign_up_button_create"
             android:background="@drawable/custom_button"
@@ -81,6 +71,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
             android:text="@string/create" />
 
     <TextView

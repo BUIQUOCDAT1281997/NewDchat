@@ -73,14 +73,6 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_account, container, false);
 
-        //Transparent Status Bar
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            Window w = getActivity().getWindow();
-            w.setFlags(WindowManager
-                    .LayoutParams
-                    .FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        }
-
         initView(rootView);
         reference.addValueEventListener(new ValueEventListener() {
             @Override

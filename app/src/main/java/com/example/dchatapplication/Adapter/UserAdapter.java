@@ -2,6 +2,7 @@ package com.example.dchatapplication.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,14 +39,12 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     // ViewHolder
     public class UserViewHolder extends RecyclerView.ViewHolder {
 
-        public CircleImageView dotOn;
         public CircleImageView imgUser;
         public TextView tvUserName, tvStatus;
 
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            this.dotOn = itemView.findViewById(R.id.status_on_off);
             this.imgUser = itemView.findViewById(R.id.item_avatar_user);
             this.tvUserName = itemView.findViewById(R.id.item_user_name);
             this.tvStatus = itemView.findViewById(R.id.item_status);
@@ -76,15 +75,12 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         } else
             holder.imgUser.setImageResource(R.drawable.pngtest);
 
-        //dots
-        //if (user.getOnoroff().equals("online")) {
-         //   holder.dotOn.setVisibility(View.VISIBLE);
-       // } else holder.dotOn.setVisibility(View.GONE);
+        setBorderImgUser(holder.imgUser, user.getId());
 
-        setColorForDot(holder.dotOn, user.getId());
 
         //textView
         holder.tvUserName.setText(user.getUserName());
+
         if (isFriends) {
             lastMessage(user.getId(), holder.tvStatus);
         } else
@@ -128,6 +124,12 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                             .equals(firebaseUser.getUid()))) {
 
                         theLastMessage = chat.getMessage();
+                        if (chat.getIsSeen().equals("false")){
+                            imgLsatMessage.setTypeface(null, Typeface.BOLD);
+                        }else {
+                            imgLsatMessage.setTypeface(null, Typeface.NORMAL);
+
+                        }
                     }
                 }
 
@@ -149,7 +151,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         });
     }
 
-    private void setColorForDot(final CircleImageView dotOn, final String userID) {
+    private void setBorderImgUser(final CircleImageView imgUser, final String userID) {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Status");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -158,9 +160,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                     Status status = snapshot.getValue(Status.class);
                     if (status.getId().equals(userID)){
                         if (status.getOnline().equals("online")){
-                            dotOn.setVisibility(View.VISIBLE);
+                            imgUser.setBorderWidth((int) mContext.getResources().getDimension(R.dimen.border_online));
                         }else {
-                            dotOn.setVisibility(View.GONE);
+                            imgUser.setBorderWidth((int) mContext.getResources().getDimension(R.dimen.border_offline));
                         }
                     }
                 }

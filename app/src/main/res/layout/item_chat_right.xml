@@ -31,6 +31,8 @@
         android:layout_marginRight="8dp"
         android:paddingRight="2dp"
         android:text="Seen"
+        android:textStyle="italic"
+        android:textSize="10sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView_item_chat" />
 

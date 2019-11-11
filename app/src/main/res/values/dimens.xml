@@ -3,5 +3,7 @@
 
     <dimen name="margin_vertical">16dp</dimen>
     <dimen name="padding_round_text">10dp</dimen>
+    <dimen name="border_online">3dp</dimen>
+    <dimen name="border_offline">1dp</dimen>
 
 </resources>
