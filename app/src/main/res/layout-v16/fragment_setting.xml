@@ -17,7 +17,8 @@
         android:id="@+id/setting_tv_account"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/your_account" />
+        android:text="@string/your_account"
+        android:drawableStart="@drawable/ic_your_account" />
 
     <TextView
         android:id="@+id/setting_tv_log_out"
@@ -27,5 +28,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/log_out" />
+
 
 </LinearLayout>

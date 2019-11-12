@@ -16,11 +16,15 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.dchatapplication.Other.User;
 import com.example.dchatapplication.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.HashMap;
 
 public class ProfileFriendActivity extends AppCompatActivity {
 
@@ -82,5 +86,31 @@ public class ProfileFriendActivity extends AppCompatActivity {
         imgUser = findViewById(R.id.profile_friend_img);
         tvUserName = findViewById(R.id.profile_friend_user_name);
         tvStatus = findViewById(R.id.profile_friend_status);
+    }
+
+    private void setOnOff(String onOff) {
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("online", onOff);
+
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        DatabaseReference databaseReference = FirebaseDatabase
+                .getInstance()
+                .getReference("Status")
+                .child(firebaseUser.getUid());
+
+        databaseReference.updateChildren(hashMap);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setOnOff("online");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        setOnOff("offline");
     }
 }
