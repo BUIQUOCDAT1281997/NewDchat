@@ -3,7 +3,6 @@ package com.example.dchatapplication.Activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,7 +16,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.dchatapplication.APIService;
 import com.example.dchatapplication.Adapter.MessageAdapter;
+import com.example.dchatapplication.Notification.Client;
+import com.example.dchatapplication.Notification.Data;
+import com.example.dchatapplication.Notification.MyResponse;
+import com.example.dchatapplication.Notification.Sender;
+import com.example.dchatapplication.Notification.Token;
 import com.example.dchatapplication.Other.Chat;
 import com.example.dchatapplication.R;
 import com.example.dchatapplication.Other.User;
@@ -27,6 +32,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -34,6 +40,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ChatActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -57,6 +66,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private EditText texSend;
 
     private String userIDFriend;
+
+    private APIService apiService;
+
+    private boolean notify = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +100,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                //notification
+                notify = true;
+
 
                 String currentText = texSend.getText().toString();
                 if (!TextUtils.isEmpty(currentText)) {
@@ -133,10 +150,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         imgUser = findViewById(R.id.circle_view_chat);
         useName = findViewById(R.id.chat_user_name);
 
+        apiService = Client.getClient("https://fcm.googleapis.com").create(APIService.class);
+
     }
 
 
-    private void sendMessage(String sender, String receiver, String message) {
+    private void sendMessage(String sender, final String receiver, String message) {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("sender", sender);
@@ -155,6 +174,63 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (!dataSnapshot.exists()) {
                     chatRef.child("id").setValue(userIDFriend);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+        //notification
+        final String msg = message;
+
+        //DatabaseReference drf = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+                if (notify)
+                    sendNotification(receiver, user.getUserName(), msg);
+                notify = false;
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    //notification
+    private void sendNotification(String receiver, final String userName, final String message) {
+        DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
+        Query query = tokens.orderByKey().equalTo(receiver);
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Token token = snapshot.getValue(Token.class);
+                    Data data = new Data(userIDFriend, R.mipmap.ic_launcher, userName + " : " + message, "New message", firebaseUser.getUid());
+                    Sender sender = new Sender(data, token.getToken());
+
+                    apiService.sendNotification(sender).enqueue(new Callback<MyResponse>() {
+                        @Override
+                        public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                            if (response.code() == 200) {
+                                if (response.body().success != 1) {
+                                    Toast.makeText(ChatActivity.this, "Failed!", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<MyResponse> call, Throwable t) {
+
+                        }
+                    });
                 }
             }
 
@@ -210,6 +286,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Chat chat = snapshot.getValue(Chat.class);
+                    assert chat != null;
                     if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userIDFriends)) {
                         HashMap<String, Object> hashMap = new HashMap<>();
                         hashMap.put("isSeen", "true");
@@ -224,6 +301,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
     }
+
 
     @Override
     protected void onResume() {
@@ -246,9 +324,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        if (view.getId()==R.id.circle_view_chat){
+        if (view.getId() == R.id.circle_view_chat) {
             Intent intent = new Intent(ChatActivity.this, ProfileFriendActivity.class);
-            intent.putExtra("userID",userIDFriend);
+            intent.putExtra("userID", userIDFriend);
             startActivity(intent);
         }
     }
