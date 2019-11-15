@@ -140,7 +140,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-
     private void initView() {
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         reference = FirebaseDatabase.getInstance().getReference("Users").child(userIDFriend);
@@ -150,10 +149,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         imgUser = findViewById(R.id.circle_view_chat);
         useName = findViewById(R.id.chat_user_name);
 
-        apiService = Client.getClient("https://fcm.googleapis.com").create(APIService.class);
+        apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
 
     }
-
 
     private void sendMessage(String sender, final String receiver, String message) {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
@@ -187,8 +185,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         //notification
         final String msg = message;
 
-        //DatabaseReference drf = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
-        reference.addValueEventListener(new ValueEventListener() {
+        DatabaseReference drf = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
+        drf.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
@@ -205,41 +203,47 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     //notification
-    private void sendNotification(String receiver, final String userName, final String message) {
-        DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
-        Query query = tokens.orderByKey().equalTo(receiver);
-        query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Token token = snapshot.getValue(Token.class);
-                    Data data = new Data(userIDFriend, R.mipmap.ic_launcher, userName + " : " + message, "New message", firebaseUser.getUid());
-                    Sender sender = new Sender(data, token.getToken());
 
-                    apiService.sendNotification(sender).enqueue(new Callback<MyResponse>() {
-                        @Override
-                        public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
-                            if (response.code() == 200) {
-                                if (response.body().success != 1) {
-                                    Toast.makeText(ChatActivity.this, "Failed!", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }
 
-                        @Override
-                        public void onFailure(Call<MyResponse> call, Throwable t) {
+         private void sendNotification(final String receiver, final String userName, final String message) {
+              DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
+              Query query = tokens.orderByKey().equalTo(receiver);
+              query.addValueEventListener(new ValueEventListener() {
+                  @Override
+                  public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                      for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                          Token token = snapshot.getValue(Token.class);
+                          Data data = new Data(firebaseUser.getUid(), R.mipmap.ic_launcher, userName + " : " + message, "New message", userIDFriend);
+                          Sender sender = new Sender(data, token.getToken());
 
-                        }
-                    });
-                }
-            }
+                          apiService.sendNotification(sender).enqueue(new Callback<MyResponse>() {
+                              @Override
+                              public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                                  if (response.code() == 200) {
+                                      if (response.body().success != 1) {
+                                          Toast.makeText(ChatActivity.this, "Failed!", Toast.LENGTH_SHORT).show();
+                                      }
+                                  }
+                              }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                              @Override
+                              public void onFailure(Call<MyResponse> call, Throwable t) {
 
-            }
-        });
-    }
+                              }
+                          });
+                      }
+                  }
+
+                  @Override
+                  public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                  }
+              });
+          }
+
+
+
+
 
 
     private void readMessage(final String myId, final String userID, final String imageUrl) {

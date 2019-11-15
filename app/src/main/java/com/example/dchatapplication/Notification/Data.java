@@ -5,15 +5,15 @@ public class Data {
     private int icon;
     private String body;
     private String title;
-    private String sender;
+    private String sented;
 
 
-    public Data(String user, int icon, String body, String title, String sender) {
+    public Data(String user, int icon, String body, String title, String sented) {
         this.user = user;
         this.icon = icon;
         this.body = body;
         this.title = title;
-        this.sender = sender;
+        this.sented = sented;
     }
 
     public Data() {
@@ -51,11 +51,11 @@ public class Data {
         this.title = title;
     }
 
-    public String getSender() {
-        return sender;
+    public String getSented() {
+        return sented;
     }
 
-    public void setSender(String sender) {
-        this.sender = sender;
+    public void setSented(String sented) {
+        this.sented = sented;
     }
 }

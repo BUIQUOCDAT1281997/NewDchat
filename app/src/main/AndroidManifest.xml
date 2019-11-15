@@ -30,10 +30,7 @@
             android:windowSoftInputMode="adjustPan" />
         <activity android:name=".Activity.StartActivity" />
 
-        <service android:name=".Notification.MyFirebaseService"
-            android:enabled="true"
-            android:exported="true"
-            >
+        <service android:name=".Notification.MyFirebaseService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
