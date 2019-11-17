@@ -54,7 +54,7 @@ public class FriendsFragment extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_friends, container, false);
 
         //init view
-        initView(rootView);
+        initView();
 
         //init RecyclerView
         recyclerView = rootView.findViewById(R.id.recycler_view_friends);
@@ -114,7 +114,7 @@ public class FriendsFragment extends Fragment {
     }
 
 
-    private void initView(View rootView) {
+    private void initView() {
         //list user
         listUser = new ArrayList<>();
         listID = new ArrayList<>();

@@ -6,7 +6,9 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -56,7 +58,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private FirebaseUser firebaseUser;
     private DatabaseReference reference;
     private DatabaseReference referenceFromChats;
-
 
     private RecyclerView recyclerView;
     private List<Chat> listData;
@@ -311,6 +312,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     protected void onResume() {
         super.onResume();
         setOnOff("online");
+
+        //notification
+        setCurrentUser(userIDFriend);
     }
 
     @Override
@@ -324,6 +328,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         super.onPause();
         referenceFromChats.removeEventListener(eventListener);
         setOnOff("offline");
+
+        //notification
+        setCurrentUser("default");
     }
 
     @Override
@@ -334,4 +341,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(intent);
         }
     }
+
+    //notification
+    private void setCurrentUser(String user){
+        SharedPreferences.Editor editor = getSharedPreferences("Preferences_Shared",MODE_PRIVATE).edit();
+        editor.putString("currentUser",user);
+        editor.apply();
+    }
+
 }

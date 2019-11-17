@@ -126,9 +126,13 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                         theLastMessage = chat.getMessage();
                         if (chat.getIsSeen().equals("false")){
                             imgLsatMessage.setTypeface(null, Typeface.BOLD);
+                            imgLsatMessage.setTextColor(mContext.getResources().getColor(R.color.colorPrimary));
+
+
                         }else {
                             imgLsatMessage.setTypeface(null, Typeface.NORMAL);
-
+                            imgLsatMessage.setTextColor(mContext.getResources().getColor(R.color.textDefaultColor));
+                            //imgLsatMessage.setTextColor(mContext.getResources().getColor(android.R.color.primary_text_dark));
                         }
                     }
                 }
