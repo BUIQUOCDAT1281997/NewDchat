@@ -204,47 +204,41 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     //notification
+    private void sendNotification(final String receiver, final String userName, final String message) {
+        DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
+        Query query = tokens.orderByKey().equalTo(receiver);
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Token token = snapshot.getValue(Token.class);
+                    Data data = new Data(firebaseUser.getUid(), R.mipmap.ic_launcher, userName + " : " + message, "New message", userIDFriend);
+                    Sender sender = new Sender(data, token.getToken());
 
+                    apiService.sendNotification(sender).enqueue(new Callback<MyResponse>() {
+                        @Override
+                        public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                            if (response.code() == 200) {
+                                if (response.body().success != 1) {
+                                    Toast.makeText(ChatActivity.this, "Failed!", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }
 
-         private void sendNotification(final String receiver, final String userName, final String message) {
-              DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
-              Query query = tokens.orderByKey().equalTo(receiver);
-              query.addValueEventListener(new ValueEventListener() {
-                  @Override
-                  public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                      for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                          Token token = snapshot.getValue(Token.class);
-                          Data data = new Data(firebaseUser.getUid(), R.mipmap.ic_launcher, userName + " : " + message, "New message", userIDFriend);
-                          Sender sender = new Sender(data, token.getToken());
+                        @Override
+                        public void onFailure(Call<MyResponse> call, Throwable t) {
 
-                          apiService.sendNotification(sender).enqueue(new Callback<MyResponse>() {
-                              @Override
-                              public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
-                                  if (response.code() == 200) {
-                                      if (response.body().success != 1) {
-                                          Toast.makeText(ChatActivity.this, "Failed!", Toast.LENGTH_SHORT).show();
-                                      }
-                                  }
-                              }
+                        }
+                    });
+                }
+            }
 
-                              @Override
-                              public void onFailure(Call<MyResponse> call, Throwable t) {
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                              }
-                          });
-                      }
-                  }
-
-                  @Override
-                  public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                  }
-              });
-          }
-
-
-
-
+            }
+        });
+    }
 
 
     private void readMessage(final String myId, final String userID, final String imageUrl) {
@@ -343,9 +337,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     //notification
-    private void setCurrentUser(String user){
-        SharedPreferences.Editor editor = getSharedPreferences("Preferences_Shared",MODE_PRIVATE).edit();
-        editor.putString("currentUser",user);
+    private void setCurrentUser(String user) {
+        SharedPreferences.Editor editor = getSharedPreferences("Preferences_Shared", MODE_PRIVATE).edit();
+        editor.putString("currentUser", user);
         editor.apply();
     }
 
