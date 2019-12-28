@@ -1,4 +1,4 @@
-package com.example.dchatapplication;
+package com.example.dchatapplication.Fragment;
 
 
 import android.os.Bundle;
@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.dchatapplication.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;

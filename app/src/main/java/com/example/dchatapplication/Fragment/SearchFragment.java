@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import com.example.dchatapplication.Adapter.UserAdapter;
 import com.example.dchatapplication.R;
@@ -44,11 +45,15 @@ public class SearchFragment extends Fragment {
     private List<User> listUser;
     private EditText etSearch;
 
+    private LinearLayout linearLayoutLoaderView;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_search, container, false);
+
+        linearLayoutLoaderView = rootView.findViewById(R.id.linearLayout_search);
 
         //search
         etSearch = rootView.findViewById(R.id.search_friends_edit_text);
@@ -102,6 +107,8 @@ public class SearchFragment extends Fragment {
                     }
 
                     Collections.shuffle(listUser);
+                    recyclerView.setVisibility(View.VISIBLE);
+                    linearLayoutLoaderView.setVisibility(View.GONE);
                     mAdapter = new UserAdapter(listUser, getContext(), false);
                     recyclerView.setAdapter(mAdapter);
                 }

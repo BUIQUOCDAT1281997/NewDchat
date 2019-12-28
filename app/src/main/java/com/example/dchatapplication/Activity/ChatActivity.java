@@ -6,7 +6,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -18,7 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.dchatapplication.APIService;
+import com.example.dchatapplication.Other.APIService;
 import com.example.dchatapplication.Adapter.MessageAdapter;
 import com.example.dchatapplication.Notification.Client;
 import com.example.dchatapplication.Notification.Data;

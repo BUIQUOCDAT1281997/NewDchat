@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.example.dchatapplication.Adapter.UserAdapter;
 import com.example.dchatapplication.Notification.Token;
@@ -43,6 +44,8 @@ public class FriendsFragment extends Fragment {
     private RecyclerView.LayoutManager layoutManager;
     private List<User> listUser;
     private List<ChatList> listID;
+
+    private LinearLayout linearLayoutLoaderView;
 
     //Firebase
     private FirebaseUser firebaseUser;
@@ -101,7 +104,8 @@ public class FriendsFragment extends Fragment {
                         }
                     }
                 }
-
+                recyclerView.setVisibility(View.VISIBLE);
+                linearLayoutLoaderView.setVisibility(View.GONE);
                 mAdapter = new UserAdapter(listUser, getContext(), true);
                 recyclerView.setAdapter(mAdapter);
             }
@@ -115,6 +119,8 @@ public class FriendsFragment extends Fragment {
 
 
     private void initView() {
+
+        linearLayoutLoaderView = rootView.findViewById(R.id.linearLayout_search);
         //list user
         listUser = new ArrayList<>();
         listID = new ArrayList<>();
