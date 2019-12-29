@@ -17,13 +17,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.dchatapplication.Other.APIService;
 import com.example.dchatapplication.Adapter.MessageAdapter;
 import com.example.dchatapplication.Notification.Client;
 import com.example.dchatapplication.Notification.Data;
 import com.example.dchatapplication.Notification.MyResponse;
 import com.example.dchatapplication.Notification.Sender;
 import com.example.dchatapplication.Notification.Token;
+import com.example.dchatapplication.Other.APIService;
 import com.example.dchatapplication.Other.Chat;
 import com.example.dchatapplication.R;
 import com.example.dchatapplication.Other.User;

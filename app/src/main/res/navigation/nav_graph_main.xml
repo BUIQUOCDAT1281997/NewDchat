@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_main"
-    app:startDestination="@id/menu_search">
+    app:startDestination="@id/menu_news">
 
     <fragment
         android:id="@+id/menu_search"
@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_searchFragment_to_friendsFragment"
             app:destination="@id/menu_friends" />
+        <action
+            android:id="@+id/action_menu_search_to_newsFragment"
+            app:destination="@id/menu_news" />
     </fragment>
     <fragment
         android:id="@+id/menu_friends"
@@ -34,5 +37,26 @@
         <action
             android:id="@+id/action_settingFragment_to_friendsFragment"
             app:destination="@id/menu_friends" />
+    </fragment>
+    <fragment
+        android:id="@+id/menu_news"
+        android:name="com.example.dchatapplication.Fragment.NewsFragment"
+        android:label="fragment_news"
+        tools:layout="@layout/fragment_news" >
+        <action
+            android:id="@+id/action_newsFragment_to_menu_search"
+            app:destination="@id/menu_search" />
+        <action
+            android:id="@+id/action_newsFragment_to_createNewPostFragment"
+            app:destination="@id/createNewPostFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/createNewPostFragment"
+        android:name="com.example.dchatapplication.Fragment.CreateNewPostFragment"
+        android:label="fragment_create_new_post"
+        tools:layout="@layout/fragment_create_new_post" >
+        <action
+            android:id="@+id/action_createNewPostFragment_to_newsFragment"
+            app:destination="@id/menu_news" />
     </fragment>
 </navigation>

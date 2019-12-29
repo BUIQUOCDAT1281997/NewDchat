@@ -14,7 +14,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activity.ProfileFriendActivity"></activity>
+        <activity android:name=".Activity.ShowPictureActivity"></activity>
+        <activity android:name=".Activity.CommentActivity" />
+        <activity android:name=".Activity.ProfileFriendActivity" />
         <activity android:name=".Activity.ProfileActivity" />
         <activity android:name=".Activity.SplashActivity">
             <intent-filter>
@@ -30,23 +32,25 @@
             android:name=".Activity.MainActivity"
             android:windowSoftInputMode="adjustPan" />
         <activity android:name=".Activity.StartActivity" />
-        <activity android:name=".Activity.QRActivity"/>
+        <activity android:name=".Activity.QRActivity" />
 
         <service android:name=".Notification.MyFirebaseService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
-        <service android:name=".Notification.MyFirebaseIdService"
+        <service
+            android:name=".Notification.MyFirebaseIdService"
             android:enabled="true"
-            android:exported="true"
-            >
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
-        <meta-data android:name="com.google.android.gms.vision.DEPENDENCIES" android:value="barcode"/>
+
+        <meta-data
+            android:name="com.google.android.gms.vision.DEPENDENCIES"
+            android:value="barcode" />
     </application>
 
 </manifest>
