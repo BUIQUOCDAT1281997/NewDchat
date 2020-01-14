@@ -57,6 +57,12 @@
         tools:layout="@layout/fragment_create_new_post" >
         <action
             android:id="@+id/action_createNewPostFragment_to_newsFragment"
-            app:destination="@id/menu_news" />
+            app:destination="@id/menu_news"
+            app:popUpTo="@+id/menu_news"
+            app:popUpToInclusive="true" />
+
+        <argument
+            android:name="data"
+            android:defaultValue="null" />
     </fragment>
 </navigation>

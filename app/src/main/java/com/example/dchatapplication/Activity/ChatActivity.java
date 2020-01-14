@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -25,6 +26,7 @@ import com.example.dchatapplication.Notification.Sender;
 import com.example.dchatapplication.Notification.Token;
 import com.example.dchatapplication.Other.APIService;
 import com.example.dchatapplication.Other.Chat;
+import com.example.dchatapplication.Other.Status;
 import com.example.dchatapplication.R;
 import com.example.dchatapplication.Other.User;
 import com.google.firebase.auth.FirebaseAuth;
@@ -64,6 +66,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     private ImageView btn_send;
     private EditText texSend;
+    private TextView tvStatus;
 
     private String userIDFriend;
 
@@ -96,25 +99,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         layoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(layoutManager);
 
-        // set Even click
-        btn_send.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                //notification
-                notify = true;
-
-
-                String currentText = texSend.getText().toString();
-                if (!TextUtils.isEmpty(currentText)) {
-                    sendMessage(firebaseUser.getUid(), userIDFriend, currentText);
-                } else {
-                    Toast.makeText(ChatActivity.this, "You can't send empty message", Toast.LENGTH_LONG).show();
-                }
-                texSend.setText("");
-            }
-        });
-
         // work with toolbar and read message
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -134,6 +118,27 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
+        setStatusUser(userIDFriend);
+
+        // set Even click
+        btn_send.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                //notification
+                notify = true;
+
+
+                String currentText = texSend.getText().toString();
+                if (!TextUtils.isEmpty(currentText)) {
+                    sendMessage(firebaseUser.getUid(), userIDFriend, currentText);
+                } else {
+                    Toast.makeText(ChatActivity.this, "You can't send empty message", Toast.LENGTH_LONG).show();
+                }
+                texSend.setText("");
+            }
+        });
+
         seenMessage(userIDFriend);
 
         imgUser.setOnClickListener(this);
@@ -144,6 +149,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         reference = FirebaseDatabase.getInstance().getReference("Users").child(userIDFriend);
         referenceFromChats = FirebaseDatabase.getInstance().getReference("Chats");
+        tvStatus = findViewById(R.id.tv_status_online_offline);
         btn_send = findViewById(R.id.button_send);
         texSend = findViewById(R.id.text_send);
         imgUser = findViewById(R.id.circle_view_chat);
@@ -340,6 +346,31 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         SharedPreferences.Editor editor = getSharedPreferences("Preferences_Shared", MODE_PRIVATE).edit();
         editor.putString("currentUser", user);
         editor.apply();
+    }
+
+    private void setStatusUser(final String userID) {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Status");
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    Status status = snapshot.getValue(Status.class);
+                    if (status.getId().equals(userID)){
+                        if (status.getOnline().equals("online")){
+                            tvStatus.setText("Online");
+                        }else {
+                            tvStatus.setText("Offline");
+                        }
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
 }

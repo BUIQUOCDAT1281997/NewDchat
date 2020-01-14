@@ -37,12 +37,12 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     private String theLastMessage;
 
     // ViewHolder
-    public class UserViewHolder extends RecyclerView.ViewHolder {
+    class UserViewHolder extends RecyclerView.ViewHolder {
 
-        public CircleImageView imgUser;
-        public TextView tvUserName, tvStatus;
+        CircleImageView imgUser;
+        TextView tvUserName, tvStatus;
 
-        public UserViewHolder(@NonNull View itemView) {
+        UserViewHolder(@NonNull View itemView) {
             super(itemView);
 
             this.imgUser = itemView.findViewById(R.id.item_avatar_user);
@@ -71,9 +71,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         final User user = mDataAllUser.get(position);
 
         if (!user.getAvatarURL().equals("default")) {
-            Glide.with(mContext).load(user.getAvatarURL()).into(holder.imgUser);
+            Glide.with(mContext).load(user.getAvatarURL()).placeholder(R.drawable.ic_launcher_round_black_white).into(holder.imgUser);
         } else
-            holder.imgUser.setImageResource(R.drawable.pngtest);
+            holder.imgUser.setImageResource(R.drawable.ic_launcher_round_black_white);
 
         setBorderImgUser(holder.imgUser, user.getId());
 
@@ -125,14 +125,10 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
                         theLastMessage = chat.getMessage();
                         if (chat.getIsSeen().equals("false")){
-                            imgLsatMessage.setTypeface(null, Typeface.BOLD);
-                            imgLsatMessage.setTextColor(mContext.getResources().getColor(R.color.colorPrimary));
-
+                            imgLsatMessage.setBackgroundResource(R.drawable.custom_button);
 
                         }else {
-                            imgLsatMessage.setTypeface(null, Typeface.NORMAL);
-                            imgLsatMessage.setTextColor(mContext.getResources().getColor(R.color.textDefaultColor));
-                            //imgLsatMessage.setTextColor(mContext.getResources().getColor(android.R.color.primary_text_dark));
+                            imgLsatMessage.setBackgroundResource(R.drawable.custom_view_to_circle);
                         }
                     }
                 }
@@ -168,6 +164,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                         }else {
                             imgUser.setBorderWidth((int) mContext.getResources().getDimension(R.dimen.border_offline));
                         }
+                        break;
                     }
                 }
             }

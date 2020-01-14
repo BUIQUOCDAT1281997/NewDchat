@@ -1,7 +1,6 @@
 package com.example.dchatapplication.Fragment;
 
 
-import android.app.Activity;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -14,17 +13,15 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.dchatapplication.Other.LoadingDialog;
 import com.example.dchatapplication.R;
 import com.example.dchatapplication.Activity.StartActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -34,10 +31,10 @@ import com.google.firebase.auth.FirebaseAuth;
  */
 public class SignInFragment extends Fragment implements View.OnClickListener {
 
-    private EditText textEmail, textPassword;
+    private TextInputEditText textEmail, textPassword;
     private NavController navController;
 
-    private LinearLayout llProgressBar;
+    private LoadingDialog loadingDialog;
 
 
     //Firebase
@@ -84,7 +81,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
     private void initView(View view) {
 
         navController = Navigation.findNavController(view);
-        llProgressBar = view.findViewById(R.id.llProgressBar_sign_in);
+        loadingDialog = new LoadingDialog(getActivity());
         textEmail = view.findViewById(R.id.sign_in_email);
         textPassword = view.findViewById(R.id.sign_in_password);
 
@@ -121,7 +118,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
 
     private void loginToAccount(String email, String Password) {
 
-        llProgressBar.setVisibility(View.VISIBLE);
+        loadingDialog.startLoadingDialog();
 
         auth.signInWithEmailAndPassword(email, Password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
@@ -133,7 +130,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
                             .makeText(getActivity(), getResources().getString(R.string.Authentication_failed), Toast.LENGTH_LONG)
                             .show();
                 }
-                llProgressBar.setVisibility(View.GONE);
+                loadingDialog.dismissDialog();
             }
         });
     }

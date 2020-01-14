@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DChat</string>
+    <string name="All_fields_are_required">全て必須項目です</string>
+    <string name="Authentication_failed">認証に失敗しました</string>
+</resources>

@@ -8,11 +8,6 @@
     android:gravity="center"
     tools:context=".Fragment.SignUpFragment">
 
-        <include
-            android:id="@+id/llProgressBar_sign_up"
-            android:visibility="gone"
-            layout="@layout/progress_bar"/>
-
         <TextView
             android:id="@+id/tv_number"
             android:layout_marginBottom="20dp"
@@ -31,6 +26,7 @@
             android:ems="10"
             android:background="@drawable/rounded_border_edittext"
             android:padding="10dp"
+            android:maxLength="30"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginBottom="10dp"

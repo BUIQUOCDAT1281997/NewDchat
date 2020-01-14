@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DChat</string>
+    <string name="All_fields_are_required">各个领域都需要</string>
+    <string name="Authentication_failed">验证失败</string>
+    <string name="create">创建</string>
+    <string name="create_new_account">建立新帐户</string>
+    <string name="edit_profile">编辑个人资料</string>
+    <string name="email">电子邮件</string>
+    <string name="log_in">登录</string>
+    <string name="log_out">登出</string>
+    <string name="not_seen">等待</string>
+    <string name="password">密码</string>
+    <string name="please_wait">请耐心等待 ...</string>
+    <string name="remember_me">记住账号</string>
+    <string name="search">搜索</string>
+    <string name="seen">见过</string>
+    <string name="sign_in">登入</string>
+    <string name="sign_up">注册</string>
+    <string name="status">状态</string>
+    <string name="textView_login">登录到您的帐户</string>
+    <string name="user_name">用户名</string>
+    <string name="you_want_to_log_out">您要登出吗？</string>
+    <string name="your_account">您的帐户</string>
+</resources>

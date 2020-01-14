@@ -2,6 +2,7 @@ package com.example.dchatapplication.Adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,7 @@ import com.example.dchatapplication.Other.MyBounceInterpolator;
 import com.example.dchatapplication.Other.Post;
 import com.example.dchatapplication.Other.User;
 import com.example.dchatapplication.R;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -40,11 +42,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     private List<Post> listData;
     private Context mContext;
     private boolean isMyPosts;
+    private int childCount = 0;
+    private FirebaseUser firebaseUser;
 
     public PostAdapter(List<Post> listData, Context mContext, boolean isMyPosts) {
         this.listData = listData;
         this.mContext = mContext;
         this.isMyPosts = isMyPosts;
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
     }
 
     public void didTapButton(ImageView i) {
@@ -89,32 +94,32 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             holder.imagePost.setVisibility(View.GONE);
         }
 
+        checkLike(holder.iconLike, post,holder.tvLikes);
+
         holder.tvTime.setText(post.getCurrentTime());
         holder.tvContent.setText(post.getCaption());
 
-        if (isMyPosts){
+        if (isMyPosts || post.getSenderID().equals(firebaseUser.getUid())){
             holder.iconToChat.setImageResource(R.drawable.ic_icon_delete);
             holder.iconToChat.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Posts").child(post.getCurrentTime());
-                    databaseReference.removeValue();
+                    showDialog(post);
+
                 }
             });
         }else {
+            holder.iconToChat.setImageResource(R.drawable.ic_icon_send_to_user);
             holder.iconToChat.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(mContext, ChatActivity.class);
                     intent.putExtra("userID", post.getSenderID());
+                    intent.putExtra("likes", childCount);
                     mContext.startActivity(intent);
                 }
             });
         }
-
-        holder.tvLikes.setText(post.getCounterLikes()+" likes");
-        checkLike(holder.iconLike, post,holder.tvLikes);
-
 
         // Cai nay de tu tu
         holder.iconComment.setOnClickListener(new View.OnClickListener() {
@@ -125,6 +130,31 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 mContext.startActivity(intent);
             }
         });
+    }
+
+    private void showDialog(final Post post){
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(mContext);
+        builder.setMessage("You sure ?");
+        builder.setCancelable(false);
+        builder.setTitle("Delete Post");
+        builder.setIcon(mContext.getResources().getDrawable(R.drawable.ic_icon_delete));
+        builder.setBackground(mContext.getResources().getDrawable(R.drawable.alert_dialog_bg));
+        builder.setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        builder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Posts").child(post.getNameReference());
+                databaseReference.removeValue();
+                DatabaseReference referenceFromPeopleLike = FirebaseDatabase.getInstance().getReference("PeopleLike").child(post.getNameReference());
+                referenceFromPeopleLike.removeValue();
+            }
+        });
+        builder.show();
     }
 
     @Override
@@ -155,8 +185,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     }
 
     private void checkLike(final ImageView imageView, final Post post, final TextView tvLikes){
-
-        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("PeopleLike");
         DatabaseReference refFromPost = databaseReference.child(post.getNameReference());
 
@@ -164,7 +192,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             @Override
             public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
                 boolean youLiked = false;
-                final int childCount = (int) dataSnapshot.getChildrenCount();
+               childCount = (int) dataSnapshot.getChildrenCount();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()){
                     Like like = snapshot.getValue(Like.class);
                     if (like.getUserID().equals(firebaseUser.getUid())){
@@ -176,7 +204,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                         @Override
                         public void run() {
                             imageView.setImageResource(R.drawable.ic_icon_like_red);
-                            tvLikes.setText(childCount +" likes");
                         }
                     });
 
@@ -186,11 +213,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                         public void onClick(View view) {
                             imageView.setImageResource(R.drawable.ic_icon_like_red);
                             didTapButton(imageView);
-                           addLikes(post.getNameReference(),childCount);
+                           addLikes(post.getNameReference());
                            imageView.setEnabled(false);
                         }
                     });
                 }
+                tvLikes.setText(String.valueOf(childCount));
             }
 
             @Override
@@ -202,8 +230,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     }
 
-    private void addLikes(final String namePost, final int counterLikes){
-        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+    private void addLikes(final String namePost){
         final DatabaseReference reference = FirebaseDatabase.getInstance().getReference("PeopleLike")
                 .child(namePost)
                 .child(firebaseUser.getUid());

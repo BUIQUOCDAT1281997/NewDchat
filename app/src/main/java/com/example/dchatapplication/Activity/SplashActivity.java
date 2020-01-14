@@ -10,11 +10,9 @@ import android.os.Handler;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ProgressBar;
 
 import com.example.dchatapplication.R;
-import com.github.ybq.android.spinkit.sprite.Sprite;
-import com.github.ybq.android.spinkit.style.WanderingCubes;
+import com.github.ybq.android.spinkit.SpinKitView;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -25,15 +23,11 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        ProgressBar progressBar = findViewById(R.id.spin_kit);
-        Sprite doubleBounce = new WanderingCubes();
-        progressBar.setIndeterminateDrawable(doubleBounce);
 
         if (Build.VERSION.SDK_INT >= 21) {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
                     View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         }
-        changeStatusBarColor();
 
         mWaitHandler = new Handler();
         mWaitHandler.postDelayed(new Runnable() {
@@ -52,6 +46,7 @@ public class SplashActivity extends AppCompatActivity {
         },2500);
     }
 
+/*
     private void changeStatusBarColor() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
@@ -59,6 +54,7 @@ public class SplashActivity extends AppCompatActivity {
             window.setStatusBarColor(Color.BLACK);
         }
     }
+ */
 
     @Override
     protected void onDestroy() {

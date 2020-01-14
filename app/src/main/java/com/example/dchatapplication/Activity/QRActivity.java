@@ -8,9 +8,11 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.dchatapplication.Other.User;
@@ -36,7 +38,7 @@ public class QRActivity extends AppCompatActivity {
     private boolean isUserID = false;
     private String resultScanner;
 
-    private LinearLayout llProgressBar;
+    private TextView tvResult;
 
 
     @Override
@@ -44,15 +46,15 @@ public class QRActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qr);
 
-        llProgressBar = findViewById(R.id.llProgressBar);
         cameraView = findViewById(R.id.camera_view);
+        tvResult = findViewById(R.id.tv_result);
 
         barcodeDetector = new BarcodeDetector.Builder(this)
                 .setBarcodeFormats(Barcode.ALL_FORMATS)
                 .build();
 
         cameraSource = new CameraSource.Builder(this, barcodeDetector)
-                .setRequestedPreviewSize(1600, 1024)
+                .setRequestedPreviewSize(1024, 1024)
                 .setAutoFocusEnabled(true) //you should add this feature
                 .build();
 
@@ -90,13 +92,10 @@ public class QRActivity extends AppCompatActivity {
                 if (barcodes.size() != 0) {
 
                     resultScanner = barcodes.valueAt(0).displayValue;
-
-                    llProgressBar.post(new Runnable() {    // Use the post method of the TextView
+                    tvResult.post(new Runnable() {
+                        @Override
                         public void run() {
-                            cameraView.setVisibility(View.GONE);
-                            findViewById(R.id.view_center).setVisibility(View.GONE);
-                            llProgressBar.setVisibility(View.VISIBLE);
-
+                            tvResult.setText(resultScanner);
                         }
                     });
 
@@ -125,11 +124,6 @@ public class QRActivity extends AppCompatActivity {
                     intent.putExtra("userID", resultScanner);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
-                    llProgressBar.setVisibility(View.GONE);
-                    finish();
-                } else {
-                    Toast.makeText(QRActivity.this, "No matching id found", Toast.LENGTH_LONG).show();
-                    llProgressBar.setVisibility(View.GONE);
                     finish();
                 }
             }

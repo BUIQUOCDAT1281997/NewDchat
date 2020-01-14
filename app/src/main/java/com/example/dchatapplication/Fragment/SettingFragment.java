@@ -2,6 +2,8 @@ package com.example.dchatapplication.Fragment;
 
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -24,6 +26,7 @@ import com.example.dchatapplication.Activity.ProfileActivity;
 import com.example.dchatapplication.Activity.QRActivity;
 import com.example.dchatapplication.R;
 import com.example.dchatapplication.Activity.StartActivity;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
@@ -108,9 +111,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
                 getActivity().startActivity(intent);
                 break;
             case R.id.setting_tv_log_out:
-                FirebaseAuth.getInstance().signOut();
-                startActivity(new Intent(getActivity(), StartActivity.class));
-                getActivity().finish();
+                showDialog();
                 break;
             case R.id.button_scan_qr_code:
                 requestPermission();
@@ -133,7 +134,6 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == CAMERA_CODE) {
@@ -148,5 +148,28 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
     private void gotoQRActivity() {
         Intent intent = new Intent(getContext(), QRActivity.class);
         getActivity().startActivity(intent);
+    }
+
+    private void showDialog(){
+
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
+        builder.setMessage(getResources().getString(R.string.you_want_to_log_out));
+        builder.setCancelable(false);
+        builder.setBackground(getResources().getDrawable(R.drawable.alert_dialog_bg));
+        builder.setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        builder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                FirebaseAuth.getInstance().signOut();
+                startActivity(new Intent(getActivity(), StartActivity.class));
+                getActivity().finish();
+            }
+        });
+        builder.show();
     }
 }

@@ -1,15 +1,22 @@
 package com.example.dchatapplication.Fragment;
 
 
+import android.Manifest;
+import android.app.AlertDialog;
 import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,12 +27,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.dchatapplication.Other.LoadingDialog;
 import com.example.dchatapplication.R;
 import com.example.dchatapplication.Other.User;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -48,15 +57,16 @@ import static android.app.Activity.RESULT_OK;
  */
 public class AccountFragment extends Fragment implements View.OnClickListener {
 
-    //views
-    private View rootView;
     private TextView tvUserName, tvStatus;
     private ImageView imgUser;
-    private LinearLayout llProgressBar;
+    private LoadingDialog loadingDialog;
 
     //storage
     private StorageReference mStorageRef;
     private static final int IMAGE_REQUEST_CODE = 100;
+    private static final int MY_PERMISSIONS_REQUEST_CAMERA = 2019;
+    private static final int CAMERA = 99;
+    private static final int READ_STORAGE = 1997;
     private Uri imageUri;
     private StorageTask uploadTask;
 
@@ -68,7 +78,8 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.fragment_account, container, false);
+        //views
+        View rootView = inflater.inflate(R.layout.fragment_account, container, false);
 
         initView(rootView);
         reference.addValueEventListener(new ValueEventListener() {
@@ -84,8 +95,8 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
                                 .load(user.getAvatarURL())
                                 .placeholder(R.drawable.ic_user)
                                 .into(imgUser);
-                    }catch (NullPointerException e){
-
+                    }catch (NullPointerException ignored){
+                        Log.e("Error", ignored.getMessage());
                     }
 
                 }
@@ -106,7 +117,7 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
         tvUserName = view.findViewById(R.id.account_user_name);
         tvStatus = view.findViewById(R.id.account_status);
         imgUser = view.findViewById(R.id.profile_image);
-        llProgressBar = view.findViewById(R.id.llProgressBar);
+        loadingDialog = new LoadingDialog(getActivity());
 
         //Firebase
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -125,33 +136,39 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.profile_image) {
-            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-            intent.setType("image/*");
-            startActivityForResult(intent, IMAGE_REQUEST_CODE);
+            showPictureDialog();
         }
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (resultCode == RESULT_OK
-                && requestCode == IMAGE_REQUEST_CODE
-                && data != null
-                && data.getData() != null) {
+        if (resultCode == RESULT_OK && data !=null && data.getData() != null){
 
-            imageUri = data.getData();
-            //imgUser.setImageURI(imageUri);
+            switch (requestCode){
+                case IMAGE_REQUEST_CODE :{
+                    imageUri = data.getData();
 
-            if (uploadTask != null && uploadTask.isInProgress()) {
-                Toast.makeText(getContext(), "Upload in progress", Toast.LENGTH_LONG).show();
-            } else
-                fileUploader();
+                    if (uploadTask != null && uploadTask.isInProgress()) {
+                        Toast.makeText(getContext(), "Upload in progress", Toast.LENGTH_LONG).show();
+                    } else
+                        fileUploader();
 
+                    break;
+                }
+                case CAMERA : {
+
+                    // TODO
+                    break;
+                }
+
+                default: break;
+            }
         }
     }
 
     private void fileUploader() {
 
-        llProgressBar.setVisibility(View.VISIBLE);
+        loadingDialog.startLoadingDialog();
 
         final StorageReference fileReference = mStorageRef.child(System.currentTimeMillis()
                 + "." + getFileExtension(imageUri));
@@ -179,7 +196,7 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
                 } else {
                     Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();
                 }
-                llProgressBar.setVisibility(View.GONE);
+                loadingDialog.dismissDialog();
 
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -196,5 +213,64 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
         return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));
     }
 
+    private void showPictureDialog(){
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
+        builder.setTitle("Select Action");
+        builder.setBackground(getResources().getDrawable(R.drawable.alert_dialog_bg));
+        String[] pictureDialogItems = {"Select photo from gallery","Capture photo from camera"};
+        builder.setItems(pictureDialogItems, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int i) {
+                switch (i){
+                    case 0 :{
+                        requestPermission(true);
+                        break;
+                    }
+                    case 1 : {
+                        requestPermission(false);
+                        break;
+                    }
+                }
+            }
+        });
+        builder.show();
+    }
+
+    private void requestPermission(boolean fromGallery){
+
+        if (fromGallery){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+                    requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_STORAGE);
+                }else {
+                    readDataExternal();
+                }
+            }else {
+                readDataExternal();
+            }
+        }else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                if (ActivityCompat.checkSelfPermission(getContext(),Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
+                    requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_PERMISSIONS_REQUEST_CAMERA);
+                }else {
+                    takePhotoFromCamera();
+                }
+            }else {
+                takePhotoFromCamera();
+            }
+        }
+    }
+
+    private void readDataExternal(){
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        startActivityForResult(intent, IMAGE_REQUEST_CODE);
+    }
+
+
+    private void takePhotoFromCamera() {
+        Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(intent, CAMERA);
+    }
 
 }

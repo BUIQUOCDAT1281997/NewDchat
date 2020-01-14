@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.dchatapplication.Adapter.CommentAdapter;
@@ -51,6 +52,9 @@ public class CommentActivity extends AppCompatActivity {
         setContentView(R.layout.activity_comment);
 
         namePost = getIntent().getStringExtra("namePost");
+        int countLikes = getIntent().getIntExtra("likes", 0);
+        TextView textView = findViewById(R.id.tv_comment_likes);
+        textView.setText(String.format("%s likes", String.valueOf(countLikes)));
 
         initView();
 

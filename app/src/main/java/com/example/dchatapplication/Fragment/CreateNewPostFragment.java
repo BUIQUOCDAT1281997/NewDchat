@@ -14,6 +14,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -30,8 +32,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.dchatapplication.Other.LoadingDialog;
 import com.example.dchatapplication.R;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -67,7 +71,7 @@ public class CreateNewPostFragment extends Fragment implements View.OnClickListe
 
     private EditText contentPost;
     private ImageView picturePost;
-    private LinearLayout llProgressBar;
+    private LoadingDialog loadingDialog;
 
     private Uri imageUri;
 
@@ -79,25 +83,47 @@ public class CreateNewPostFragment extends Fragment implements View.OnClickListe
     private FirebaseUser firebaseUser;
     private DatabaseReference reference;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        assert getArguments() != null;
+        String data = getArguments().getString("data");
+
+        assert data != null;
+        if (data.equals("here_we_go")){
+            requestPermission();
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_create_new_post, container, false);
+
+
         initView(rootView);
         initFireBase();
-
 
 
         return rootView;
     }
 
     private void initView(View view){
-        llProgressBar = view.findViewById(R.id.llProgressBar);
-        contentPost = view.findViewById(R.id.new_post_content);
+        //Toolbar
+        Toolbar toolbar = view.findViewById(R.id.chat_toolbar);
+        AppCompatActivity activity = (AppCompatActivity)getActivity();
+
+        assert activity != null;
+        assert activity.getSupportActionBar() != null;
+        activity.setSupportActionBar(toolbar);
+        activity.getSupportActionBar().setTitle("");
+        activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         picturePost = view.findViewById(R.id.new_post_picture);
-        Button btCreate = view.findViewById(R.id.new_post_create);
-        btCreate.setOnClickListener(this);
+        loadingDialog = new LoadingDialog(getActivity());
+        contentPost = view.findViewById(R.id.new_post_content);
+        TextView tvPost = view.findViewById(R.id.new_post_create);
+        tvPost.setOnClickListener(this);
         picturePost.setOnClickListener(this);
     }
 
@@ -171,9 +197,8 @@ public class CreateNewPostFragment extends Fragment implements View.OnClickListe
         hashMap.put("picturePost","default");
         hashMap.put("currentTime", getCurrentTime());
         hashMap.put("caption",contentPost.getText().toString().trim());
-        hashMap.put("counterLikes","0");
 
-        llProgressBar.setVisibility(View.VISIBLE);
+        loadingDialog.startLoadingDialog();
 
         reference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
@@ -191,7 +216,7 @@ public class CreateNewPostFragment extends Fragment implements View.OnClickListe
 
                 }else {
                     Toast.makeText(getContext(), "error", Toast.LENGTH_SHORT).show();
-                    llProgressBar.setVisibility(View.GONE);
+                    loadingDialog.dismissDialog();
                 }
             }
         });
@@ -237,7 +262,7 @@ public class CreateNewPostFragment extends Fragment implements View.OnClickListe
                 } else {
                     Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();
                 }
-                llProgressBar.setVisibility(View.GONE);
+               loadingDialog.dismissDialog();
 
             }
         }).addOnFailureListener(new OnFailureListener() {

@@ -118,9 +118,12 @@ public class NewsFragment extends Fragment {
                 listData.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Post post = snapshot.getValue(Post.class);
+                    /*
                     if ((!post.getSenderID().equals(firebaseUser.getUid()))){
                         listData.add(post);
                     }
+                     */
+                    listData.add(post);
                 }
                 Collections.reverse(listData);
                 recyclerView.setVisibility(View.VISIBLE);
@@ -144,6 +147,14 @@ public class NewsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 navController.navigate(R.id.action_newsFragment_to_createNewPostFragment);
+            }
+        });
+        view.findViewById(R.id.to_create_new_post_from_image).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                bundle.putString("data", "here_we_go");
+                navController.navigate(R.id.action_newsFragment_to_createNewPostFragment,bundle);
             }
         });
     }

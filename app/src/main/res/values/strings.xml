@@ -25,4 +25,5 @@
     <string name="Authentication_failed">Authentication failed</string>
     <string name="All_fields_are_required">All fields are required</string>
     <string name="please_wait">Please wait ...</string>
+    <string name="you_want_to_log_out">You want to log out?</string>
 </resources>
