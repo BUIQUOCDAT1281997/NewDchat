@@ -6,37 +6,13 @@
     app:startDestination="@id/menu_news">
 
     <fragment
-        android:id="@+id/menu_search"
-        android:name="com.example.dchatapplication.Fragment.SearchFragment"
-        android:label="fragment_search"
-        tools:layout="@layout/fragment_search" >
-        <action
-            android:id="@+id/action_searchFragment_to_friendsFragment"
-            app:destination="@id/menu_friends" />
-        <action
-            android:id="@+id/action_menu_search_to_newsFragment"
-            app:destination="@id/menu_news" />
-    </fragment>
-    <fragment
-        android:id="@+id/menu_friends"
-        android:name="com.example.dchatapplication.Fragment.FriendsFragment"
-        android:label="fragment_friends"
-        tools:layout="@layout/fragment_friends" >
-        <action
-            android:id="@+id/action_friendsFragment_to_settingFragment"
-            app:destination="@id/menu_setting" />
-        <action
-            android:id="@+id/action_friendsFragment_to_searchFragment"
-            app:destination="@id/menu_search" />
-    </fragment>
-    <fragment
         android:id="@+id/menu_setting"
         android:name="com.example.dchatapplication.Fragment.SettingFragment"
         android:label="fragment_setting"
         tools:layout="@layout/fragment_setting" >
         <action
-            android:id="@+id/action_settingFragment_to_friendsFragment"
-            app:destination="@id/menu_friends" />
+            android:id="@+id/action_menu_setting_to_chatFragment"
+            app:destination="@id/menu_chat" />
     </fragment>
     <fragment
         android:id="@+id/menu_news"
@@ -44,11 +20,11 @@
         android:label="fragment_news"
         tools:layout="@layout/fragment_news" >
         <action
-            android:id="@+id/action_newsFragment_to_menu_search"
-            app:destination="@id/menu_search" />
-        <action
             android:id="@+id/action_newsFragment_to_createNewPostFragment"
             app:destination="@id/createNewPostFragment" />
+        <action
+            android:id="@+id/action_menu_news_to_notificationFragment"
+            app:destination="@id/menu_notification" />
     </fragment>
     <fragment
         android:id="@+id/createNewPostFragment"
@@ -64,5 +40,43 @@
         <argument
             android:name="data"
             android:defaultValue="null" />
+    </fragment>
+    <fragment
+        android:id="@+id/menu_chat"
+        android:name="com.example.dchatapplication.Fragment.ChatFragment"
+        android:label="fragment_chat"
+        tools:layout="@layout/fragment_chat" >
+        <action
+            android:id="@+id/action_chatFragment_to_menu_setting"
+            app:destination="@id/menu_setting" />
+        <action
+            android:id="@+id/action_menu_chat_to_notificationFragment"
+            app:destination="@id/menu_notification" />
+        <action
+            android:id="@+id/action_menu_chat_to_searchFragment"
+            app:destination="@id/searchFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/menu_notification"
+        android:name="com.example.dchatapplication.Fragment.NotificationFragment"
+        android:label="fragment_notification"
+        tools:layout="@layout/fragment_notification" >
+        <action
+            android:id="@+id/action_notificationFragment_to_menu_chat"
+            app:destination="@id/menu_chat" />
+        <action
+            android:id="@+id/action_notificationFragment_to_menu_news"
+            app:destination="@id/menu_news" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.example.dchatapplication.Fragment.SearchFragment"
+        android:label="fragment_search"
+        tools:layout="@layout/fragment_search" >
+        <action
+            android:id="@+id/action_searchFragment_to_menu_chat"
+            app:destination="@id/menu_chat"
+            app:popUpTo="@+id/menu_chat"
+            app:popUpToInclusive="true" />
     </fragment>
 </navigation>

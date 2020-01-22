@@ -1,56 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout3"
     android:layout_width="match_parent"
-    android:orientation="vertical"
     android:layout_height="match_parent"
+    android:background="@color/black"
     tools:context=".Activity.ProfileFriendActivity">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical" >
-
-            <ImageView
-                android:adjustViewBounds="true"
-                android:scaleType="centerCrop"
-                android:layout_weight="1"
-                android:layout_gravity="center"
-                android:id="@+id/profile_friend_img"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:src="@drawable/ic_user"
-                />
+    <ImageView
+        android:id="@+id/profile_friend_img"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_user"
+        android:alpha="0.7"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
-            <TextView
-                android:id="@+id/profile_friend_user_name"
-                android:gravity="center"
-                android:textColor="@color/black"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:padding="10dp"
-                android:fontFamily="@font/font_dep"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/user_name" />
+    <TextView
+        android:id="@+id/profile_friend_user_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:fontFamily="@font/font_dep"
+        android:text="@string/user_name"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/alert_dialog_bg"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/profile_friend_status"
+        app:layout_constraintStart_toStartOf="parent" />
 
-            <TextView
-                android:id="@+id/profile_friend_status"
-                android:gravity="center"
-                android:textStyle="italic"
-                android:fontFamily="@font/font_dep"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/status" />
+    <TextView
+        android:id="@+id/profile_friend_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginBottom="32dp"
+        android:fontFamily="@font/font_dep"
+        android:text="@string/status"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:background="@drawable/alert_dialog_bg"
+        android:textStyle="italic"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-        </LinearLayout>
+    <ImageView
+        android:id="@+id/imageView6"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/profile_friend_status"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/profile_friend_user_name"
+        app:srcCompat="@drawable/ic_next" />
 
-    </ScrollView>
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

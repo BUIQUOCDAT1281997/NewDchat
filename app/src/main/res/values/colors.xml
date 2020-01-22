@@ -7,4 +7,8 @@
     <color name="white">#ffffff</color>
     <color name="colorStatusBarSplashActivity">#202020</color>
     <color name="textDefaultColor">#757575</color>
+    <color name="facebook">#4267b2</color>
+    <color name="google">#EA4335</color>
+    <color name="colorLayerSemiDark">#60000000</color>
+    <color name="colorLayerDark">#D6000000</color>
 </resources>

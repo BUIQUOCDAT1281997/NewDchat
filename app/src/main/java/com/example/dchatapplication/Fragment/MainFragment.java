@@ -27,22 +27,22 @@ public class MainFragment extends Fragment implements View.OnClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_main, container, false);
+        return inflater.inflate(R.layout.fragment_start, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         navController = Navigation.findNavController(view);
-        view.findViewById(R.id.button_sign_in_main_fragment).setOnClickListener(this);
-        view.findViewById(R.id.button_sign_up_main_fragment).setOnClickListener(this);
+        view.findViewById(R.id.button_with_google).setOnClickListener(this);
+        view.findViewById(R.id.tv_to_sign_up).setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
-        if (v.getId()==R.id.button_sign_in_main_fragment)
+        if (v.getId()==R.id.button_with_google)
             navController.navigate(R.id.action_mainFragment_to_signInFragment);
-        if (v.getId()==R.id.button_sign_up_main_fragment)
+        if (v.getId()==R.id.tv_to_sign_up)
             navController.navigate(R.id.action_mainFragment_to_signUpFragment);
     }
 }

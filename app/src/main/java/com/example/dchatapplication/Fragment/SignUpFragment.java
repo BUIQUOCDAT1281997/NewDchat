@@ -58,12 +58,6 @@ public class SignUpFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         navController = Navigation.findNavController(view);
-        view.findViewById(R.id.tv_sign_up_number).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                navController.navigate(R.id.action_signUpFragment_to_sigUpWithNumberFragment);
-            }
-        });
         initEditText(view);
 
         // Button

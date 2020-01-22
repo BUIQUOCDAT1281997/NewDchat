@@ -24,6 +24,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:boxBackgroundMode="outline"
@@ -45,6 +46,7 @@
             android:layout_marginEnd="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
             app:endIconMode="password_toggle"
             android:hint="@string/password"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -77,14 +79,6 @@
             android:layout_marginRight="10dp"
             android:layout_marginBottom="10dp"
             android:text="@string/log_in" />
-
-        <TextView
-            android:id="@+id/sign_in_with_number_phone"
-            android:gravity="center"
-            android:textStyle="italic"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/sign_in_with_phone_number" />
 
 
 </LinearLayout>

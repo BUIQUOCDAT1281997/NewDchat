@@ -54,7 +54,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
 
         initView(view);
 
-        view.findViewById(R.id.sign_in_with_number_phone).setOnClickListener(this);
         view.findViewById(R.id.sign_in_forgot).setOnClickListener(this);
         view.findViewById(R.id.sign_in_button).setOnClickListener(this);
 
@@ -93,10 +92,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
         int idView = view.getId();
 
         switch (idView) {
-            case R.id.sign_in_with_number_phone: {
-                navController.navigate(R.id.action_signInFragment_to_signInWithNumberFragment);
-                break;
-            }
             case R.id.sign_in_forgot: {
                 navController.navigate(R.id.action_signInFragment_to_resetPasswordFragment);
                 break;

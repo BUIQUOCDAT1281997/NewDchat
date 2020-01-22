@@ -89,7 +89,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         //Toolbar
         Toolbar toolbar = findViewById(R.id.chat_toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //recyclerview

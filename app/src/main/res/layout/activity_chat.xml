@@ -53,14 +53,6 @@
                         android:textSize="18sp"
                         android:textStyle="bold" />
 
-                    <com.github.ybq.android.spinkit.SpinKitView
-                        android:id="@+id/spin_kit"
-                        style="@style/SpinKitView.Small.ThreeBounce"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_gravity="center"
-                        app:SpinKit_Color="@color/white" />
-
 
                     <TextView
                         android:id="@+id/tv_status_online_offline"
@@ -68,7 +60,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
                         android:text="Online"
-                        android:visibility="gone"
                         android:textSize="10sp"
                         android:textStyle="italic" />
                 </LinearLayout>
