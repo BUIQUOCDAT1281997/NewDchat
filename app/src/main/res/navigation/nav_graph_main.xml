@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/menu_setting"
-        android:name="com.example.dchatapplication.Fragment.SettingFragment"
+        android:name="bui.quocdat.dchat.Fragment.SettingFragment"
         android:label="fragment_setting"
         tools:layout="@layout/fragment_setting" >
         <action
@@ -16,7 +16,7 @@
     </fragment>
     <fragment
         android:id="@+id/menu_news"
-        android:name="com.example.dchatapplication.Fragment.NewsFragment"
+        android:name="bui.quocdat.dchat.Fragment.NewsFragment"
         android:label="fragment_news"
         tools:layout="@layout/fragment_news" >
         <action
@@ -28,7 +28,7 @@
     </fragment>
     <fragment
         android:id="@+id/createNewPostFragment"
-        android:name="com.example.dchatapplication.Fragment.CreateNewPostFragment"
+        android:name="bui.quocdat.dchat.Fragment.CreateNewPostFragment"
         android:label="fragment_create_new_post"
         tools:layout="@layout/fragment_create_new_post" >
         <action
@@ -43,7 +43,7 @@
     </fragment>
     <fragment
         android:id="@+id/menu_chat"
-        android:name="com.example.dchatapplication.Fragment.ChatFragment"
+        android:name="bui.quocdat.dchat.Fragment.ChatFragment"
         android:label="fragment_chat"
         tools:layout="@layout/fragment_chat" >
         <action
@@ -58,7 +58,7 @@
     </fragment>
     <fragment
         android:id="@+id/menu_notification"
-        android:name="com.example.dchatapplication.Fragment.NotificationFragment"
+        android:name="bui.quocdat.dchat.Fragment.NotificationFragment"
         android:label="fragment_notification"
         tools:layout="@layout/fragment_notification" >
         <action
@@ -70,7 +70,7 @@
     </fragment>
     <fragment
         android:id="@+id/searchFragment"
-        android:name="com.example.dchatapplication.Fragment.SearchFragment"
+        android:name="bui.quocdat.dchat.Fragment.SearchFragment"
         android:label="fragment_search"
         tools:layout="@layout/fragment_search" >
         <action

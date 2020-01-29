@@ -10,13 +10,12 @@
 
     <Button
         android:id="@+id/button_with_facebook"
+        android:backgroundTint="@color/textDefaultColor"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:backgroundTint="@color/facebook"
-        android:drawableLeft="@drawable/ic_facebook"
+        android:text="Continue with phone number"
         android:fontFamily="@font/raleway_extrabold"
-        android:text="Facebook"
         app:layout_constraintBottom_toTopOf="@+id/tv_to_sign_up"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

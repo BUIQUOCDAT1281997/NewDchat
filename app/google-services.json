@@ -8,6 +8,43 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:1006424724168:android:2999bf5a76cf4f8ba54bfd",
+        "android_client_info": {
+          "package_name": "bui.quocdat.dchat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1006424724168-e0lg4jq9vufvrth6cbfet474o0mn9j7a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "bui.quocdat.dchat",
+            "certificate_hash": "0f8783ac08ddd15157abae700e17af00f755daa9"
+          }
+        },
+        {
+          "client_id": "1006424724168-hba9ekqulhired0ph0d6n8bu213f3k7m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApIe32m1phapRsA1ma0Ie2azbevJcBhfA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1006424724168-hba9ekqulhired0ph0d6n8bu213f3k7m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:1006424724168:android:328739dbc48765e1a54bfd",
         "android_client_info": {
           "package_name": "com.example.dchatapplication"

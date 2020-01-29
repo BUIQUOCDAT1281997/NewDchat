@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#c3ea21</color>
+    <color name="colorPrimary">#C3EA21</color>
     <color name="colorPrimaryDark">#9cdd05</color>
     <color name="colorAccent">#32393f</color>
     <color name="black">#000000</color>
@@ -11,4 +11,6 @@
     <color name="google">#EA4335</color>
     <color name="colorLayerSemiDark">#60000000</color>
     <color name="colorLayerDark">#D6000000</color>
+    <color name="light_gray_1">#E1E8ED</color>
+    <color name="light_gray_2">#E9EBEE</color>
 </resources>

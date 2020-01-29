@@ -3,6 +3,7 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="facebook_app_id">864263934028908</string> <string name="fb_login_protocol_scheme">fb864263934028908</string>
     <string name="sign_in">sign in</string>
     <string name="sign_up">sign up</string>
     <string name="textView_login">Login to your account</string>
@@ -26,4 +27,5 @@
     <string name="All_fields_are_required">All fields are required</string>
     <string name="please_wait">Please wait ...</string>
     <string name="you_want_to_log_out">You want to log out?</string>
+    <string name="text_contents">There is no garbage collection in C, so if you don\'t explicitly free a chunk of memory, it will never get freed, even if there are no references to it. Maybe you come from a background in garbage collected languages, so it might be hard to change your way of thought, but it\'s always important to remember to \"manually\" free all resources in low-level languages like C.</string>
 </resources>

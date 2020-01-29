@@ -12,8 +12,6 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginStart="8dp"
-
-        android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
         android:src="@drawable/ic_user"
         app:layout_constraintStart_toStartOf="parent"
@@ -24,7 +22,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
         android:fontFamily="@font/font_dep"
         android:text="@string/user_name"
@@ -65,7 +62,7 @@
         android:layout_marginTop="8dp"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
-        android:src="@drawable/ic_insert_photo_black_24dp"
+        android:background="@color/textDefaultColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/item_news_text_posts" />
