@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+
 import bui.quocdat.dchat.Adapter.MessageAdapter;
 import bui.quocdat.dchat.Notification.Client;
 import bui.quocdat.dchat.Notification.Data;
@@ -27,6 +29,8 @@ import bui.quocdat.dchat.Other.APIService;
 import bui.quocdat.dchat.Other.Chat;
 import bui.quocdat.dchat.Other.Status;
 import bui.quocdat.dchat.Other.User;
+
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -119,27 +123,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         setStatusUser(userIDFriend);
 
         // set Even click
-        btn_send.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                //notification
-                notify = true;
-
-
-                String currentText = texSend.getText().toString();
-                if (!TextUtils.isEmpty(currentText)) {
-                    sendMessage(firebaseUser.getUid(), userIDFriend, currentText);
-                } else {
-                    Toast.makeText(ChatActivity.this, "You can't send empty message", Toast.LENGTH_LONG).show();
-                }
-                texSend.setText("");
-            }
-        });
+        btn_send.setOnClickListener(this);
 
         seenMessage(userIDFriend);
 
         imgUser.setOnClickListener(this);
+        findViewById(R.id.img_attach).setOnClickListener(this);
 
     }
 
@@ -332,11 +321,55 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.circle_view_chat) {
-            Intent intent = new Intent(ChatActivity.this, ProfileFriendActivity.class);
-            intent.putExtra("userID", userIDFriend);
-            startActivity(intent);
+        switch (view.getId()){
+            case R.id.circle_view_chat :
+                Intent intent = new Intent(ChatActivity.this, ProfileFriendActivity.class);
+                intent.putExtra("userID", userIDFriend);
+                startActivity(intent);
+                break;
+            case R.id.img_attach :
+                showBottomSheet();
+                break;
+            case R.id.button_send :
+            {
+                //notification
+                notify = true;
+
+                String currentText = texSend.getText().toString();
+                if (!TextUtils.isEmpty(currentText)) {
+                    sendMessage(firebaseUser.getUid(), userIDFriend, currentText);
+                } else {
+                    Toast.makeText(ChatActivity.this, "You can't send empty message", Toast.LENGTH_LONG).show();
+                }
+                texSend.setText("");
+                break;
+            }
+            case R.id.tv_file_pdf :
+                Toast.makeText(this, "pdf", Toast.LENGTH_LONG).show();
+                break;
+            case R.id.tv_photo_video :
+                Toast.makeText(this, "photo video", Toast.LENGTH_LONG).show();
+                break;
+            case R.id.tv_music :
+                Toast.makeText(this, "music", Toast.LENGTH_LONG).show();
+                break;
+            case R.id.tv_location :
+                Toast.makeText(this, "location", Toast.LENGTH_LONG).show();
+                break;
+            default: break;
         }
+    }
+
+    private void showBottomSheet() {
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View view = inflater.inflate(R.layout.bottom_sheet_layout, null);
+        bottomSheetDialog.setContentView(view);
+        bottomSheetDialog.show();
+        view.findViewById(R.id.tv_file_pdf).setOnClickListener(this);
+        view.findViewById(R.id.tv_photo_video).setOnClickListener(this);
+        view.findViewById(R.id.tv_music).setOnClickListener(this);
+        view.findViewById(R.id.tv_location).setOnClickListener(this);
     }
 
     //notification
@@ -351,12 +384,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Status status = snapshot.getValue(Status.class);
-                    if (status.getId().equals(userID)){
-                        if (status.getOnline().equals("online")){
+                    if (status.getId().equals(userID)) {
+                        if (status.getOnline().equals("online")) {
                             tvStatus.setText("Online");
-                        }else {
+                        } else {
                             tvStatus.setText("Offline");
                         }
                         break;

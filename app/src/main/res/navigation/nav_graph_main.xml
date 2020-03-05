@@ -11,7 +11,7 @@
         android:label="fragment_setting"
         tools:layout="@layout/fragment_setting" >
         <action
-            android:id="@+id/action_menu_setting_to_chatFragment"
+            android:id="@+id/action_menu_setting_to_friendsFragment"
             app:destination="@id/menu_chat" />
     </fragment>
     <fragment
@@ -42,31 +42,16 @@
             android:defaultValue="null" />
     </fragment>
     <fragment
-        android:id="@+id/menu_chat"
-        android:name="bui.quocdat.dchat.Fragment.ChatFragment"
-        android:label="fragment_chat"
-        tools:layout="@layout/fragment_chat" >
-        <action
-            android:id="@+id/action_chatFragment_to_menu_setting"
-            app:destination="@id/menu_setting" />
-        <action
-            android:id="@+id/action_menu_chat_to_notificationFragment"
-            app:destination="@id/menu_notification" />
-        <action
-            android:id="@+id/action_menu_chat_to_searchFragment"
-            app:destination="@id/searchFragment" />
-    </fragment>
-    <fragment
         android:id="@+id/menu_notification"
         android:name="bui.quocdat.dchat.Fragment.NotificationFragment"
         android:label="fragment_notification"
         tools:layout="@layout/fragment_notification" >
         <action
-            android:id="@+id/action_notificationFragment_to_menu_chat"
-            app:destination="@id/menu_chat" />
-        <action
             android:id="@+id/action_notificationFragment_to_menu_news"
             app:destination="@id/menu_news" />
+        <action
+            android:id="@+id/action_menu_notification_to_friendsFragment"
+            app:destination="@id/menu_chat" />
     </fragment>
     <fragment
         android:id="@+id/searchFragment"
@@ -74,9 +59,22 @@
         android:label="fragment_search"
         tools:layout="@layout/fragment_search" >
         <action
-            android:id="@+id/action_searchFragment_to_menu_chat"
-            app:destination="@id/menu_chat"
-            app:popUpTo="@+id/menu_chat"
-            app:popUpToInclusive="true" />
+            android:id="@+id/action_searchFragment_to_friendsFragment"
+            app:destination="@id/menu_chat" />
+    </fragment>
+    <fragment
+        android:id="@+id/menu_chat"
+        android:name="bui.quocdat.dchat.Fragment.ChatFragment"
+        android:label="fragment_friends"
+        tools:layout="@layout/fragment_friends" >
+        <action
+            android:id="@+id/action_friendsFragment_to_menu_notification"
+            app:destination="@id/menu_notification" />
+        <action
+            android:id="@+id/action_friendsFragment_to_menu_setting"
+            app:destination="@id/menu_setting" />
+        <action
+            android:id="@+id/action_friendsFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
     </fragment>
 </navigation>

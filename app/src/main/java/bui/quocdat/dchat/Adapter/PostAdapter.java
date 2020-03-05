@@ -35,7 +35,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.List;
 
 import bui.quocdat.dchat.R;
-import de.hdodenhof.circleimageview.CircleImageView;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
 
@@ -164,7 +163,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     }
 
     class PostViewHolder extends RecyclerView.ViewHolder {
-        CircleImageView imageUser;
+        ImageView imageUser;
         TextView tvUserName , tvTime , tvContent, tvLikes;
         ImageView imagePost, iconLike, iconComment, iconToChat;
 
@@ -256,7 +255,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
                 if (!user.getAvatarURL().equals("default")){
-                    Glide.with(mContext).load(user.getAvatarURL()).placeholder(R.drawable.ic_insert_photo_black_24dp).into(avatar);
+                    Glide.with(mContext).load(user.getAvatarURL()).placeholder(R.color.textDefaultColor).into(avatar);
                 }
 
                 userName.setText(user.getUserName());
