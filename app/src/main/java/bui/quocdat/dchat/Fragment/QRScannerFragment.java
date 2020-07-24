@@ -1,11 +1,16 @@
 package bui.quocdat.dchat.Fragment;
 
 
+import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -17,8 +22,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import bui.quocdat.dchat.Activity.ChatActivity;
+import bui.quocdat.dchat.Adapter.UserAdapter;
+import bui.quocdat.dchat.Other.Strings;
 import bui.quocdat.dchat.Other.User;
 import bui.quocdat.dchat.R;
+import bui.quocdat.dchat.Socketconnetion.SocketManager;
+
+import com.bumptech.glide.Glide;
+import com.github.nkzawa.emitter.Emitter;
+import com.github.nkzawa.socketio.client.Socket;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
@@ -29,7 +41,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Objects;
 
 /**
@@ -43,15 +61,20 @@ public class QRScannerFragment extends Fragment {
     private SurfaceView cameraView;
     private boolean isUserID = false;
     private String resultScanner;
+    private static final int MY_PERMISSIONS_REQUEST_CAMERA = 2019;
 
     private AlertDialog dialog;
 
+    //my server
+    private Socket socket;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_qrscanner, container, false);
+
+        socket = SocketManager.getInstance().getSocket();
 
         cameraView = rootView.findViewById(R.id.camera_view);
 
@@ -74,6 +97,15 @@ public class QRScannerFragment extends Fragment {
             @Override
             public void surfaceCreated(SurfaceHolder surfaceHolder) {
                 try {
+                    if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(getContext()), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                        requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_PERMISSIONS_REQUEST_CAMERA);
+                        // here to request the missing permissions, and then overriding
+                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                        //                                          int[] grantResults)
+                        // to handle the case where the user grants the permission. See the documentation
+                        // for ActivityCompat#requestPermissions for more details.
+                        return;
+                    }
                     cameraSource.start(cameraView.getHolder());
                 } catch (IOException ie) {
                     Log.e("CAMERA SOURCE", ie.getMessage());
@@ -111,10 +143,10 @@ public class QRScannerFragment extends Fragment {
                         public void run() {
                             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                             LayoutInflater inflater = getActivity().getLayoutInflater();
-                            builder.setView(inflater.inflate(R.layout.progress_bar,null));
+                            builder.setView(inflater.inflate(R.layout.progress_bar, null));
                             builder.setCancelable(false);
 
-                            dialog=builder.create();
+                            dialog = builder.create();
                             dialog.show();
                             accuracy();
                         }
@@ -126,36 +158,61 @@ public class QRScannerFragment extends Fragment {
     }
 
     private void accuracy() {
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users");
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    User user = snapshot.getValue(User.class);
-                    if (user.getId().equals(resultScanner)) {
-                        isUserID = true;
-                        break;
-                    }
+//        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users");
+//        databaseReference.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                    User user = snapshot.getValue(User.class);
+//                    if (user.getId().equals(resultScanner)) {
+//                        isUserID = true;
+//                        break;
+//                    }
+//                }
+//
+//                if (isUserID) {
+//                    Intent intent = new Intent(getContext(), ChatActivity.class);
+//                    intent.putExtra("userID", resultScanner);
+//                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                    startActivity(intent);
+//                    getActivity().finish();
+//                    dialog.dismiss();
+//                }
+//                dialog.dismiss();
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//
+//        });
+        if (resultScanner.matches("[0-9]+"))
+            socket.emit("getInfOfUser", resultScanner).on("resultInfOfUser", new Emitter.Listener() {
+                @Override
+                public void call(final Object... args) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            dialog.dismiss();
+                            JSONObject infUser = (JSONObject) args[0];
+                            if (infUser != null)
+                                try {
+                                    String id = infUser.getString("id");
+                                    Intent intent = new Intent(getContext(), ChatActivity.class);
+                                    intent.putExtra("userID", id);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    startActivity(intent);
+                                    getActivity().finish();
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                        }
+                    });
                 }
+            });
 
-                if (isUserID) {
-                    Intent intent = new Intent(getContext(), ChatActivity.class);
-                    intent.putExtra("userID", resultScanner);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
-                    getActivity().finish();
-                    dialog.dismiss();
-                }
-                dialog.dismiss();
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-
-        });
     }
 
 

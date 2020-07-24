@@ -1,6 +1,8 @@
 package bui.quocdat.dchat.Fragment;
 
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -17,9 +19,14 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import bui.quocdat.dchat.Adapter.UserAdapter;
+import bui.quocdat.dchat.Other.Strings;
 import bui.quocdat.dchat.R;
 import bui.quocdat.dchat.Other.StringUtils;
 import bui.quocdat.dchat.Other.User;
+import bui.quocdat.dchat.Socketconnetion.SocketManager;
+
+import com.github.nkzawa.emitter.Emitter;
+import com.github.nkzawa.socketio.client.Socket;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -27,6 +34,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,13 +58,20 @@ public class SearchFragment extends Fragment {
 
     private LinearLayout linearLayoutLoaderView;
 
+    //my server
+    private Socket socket;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_search, container, false);
 
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Strings.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        String id = sharedPreferences.getString(Strings.USER_ID, "");
+
         linearLayoutLoaderView = rootView.findViewById(R.id.linearLayout_search);
+        socket = SocketManager.getInstance().getSocket();
 
         //search
         etSearch = rootView.findViewById(R.id.search_friends_edit_text);
@@ -84,96 +102,137 @@ public class SearchFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
 
         //Add all user to list
-        readAllUser();
+//        readAllUser();
+        socket.emit("getAllUser", id).on("resultAllUser", new Emitter.Listener() {
+            @Override
+            public void call(final Object... args) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        JSONArray data = (JSONArray) args[0];
+                        try {
+                            listUser = new ArrayList<>();
+                            User user;
+                            for (int i = 0; i < data.length(); i++) {
+                                JSONObject current = data.getJSONObject(i);
+                                user = new User(Integer.parseInt(current.getString("id")),
+                                        current.getString("phone"),
+                                        current.getString("email"),
+                                        current.getString("password"),
+                                        current.getString("full_name"),
+                                        current.getString("preferences"),
+                                        current.getString("created_at"),
+                                        current.getBoolean("status"),
+                                        current.getString("url"));
+                                listUser.add(user);
+                            }
+                            Collections.shuffle(listUser);
+                            recyclerView.setVisibility(View.VISIBLE);
+                            linearLayoutLoaderView.setVisibility(View.GONE);
+                            mAdapter = new UserAdapter(listUser, getContext(), false);
+                            recyclerView.setAdapter(mAdapter);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        });
 
 
         return rootView;
     }
 
-    private void readAllUser() {
-        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
-
-        reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (etSearch.getText().toString().equals("")) {
-                    listUser.clear();
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        User user = snapshot.getValue(User.class);
-                        if (!user.getId().equals(firebaseUser.getUid())) {
-                            listUser.add(user);
-                        }
-                    }
-
-                    Collections.shuffle(listUser);
-                    recyclerView.setVisibility(View.VISIBLE);
-                    linearLayoutLoaderView.setVisibility(View.GONE);
-                    mAdapter = new UserAdapter(listUser, getContext(), false);
-                    recyclerView.setAdapter(mAdapter);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
+//    private void readAllUser() {
+//        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+//        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
+//
+//        reference.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                if (etSearch.getText().toString().equals("")) {
+//                    listUser.clear();
+//                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                        User user = snapshot.getValue(User.class);
+//                        if (!user.getId().equals(firebaseUser.getUid())) {
+//                            listUser.add(user);
+//                        }
+//                    }
+//
+//                    Collections.shuffle(listUser);
+//                    recyclerView.setVisibility(View.VISIBLE);
+//                    linearLayoutLoaderView.setVisibility(View.GONE);
+//                    mAdapter = new UserAdapter(listUser, getContext(), false);
+//                    recyclerView.setAdapter(mAdapter);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+//    }
 
     private void searchUser(final String string) {
-        final FirebaseUser fuser = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference rf = FirebaseDatabase.getInstance().getReference("Users");
+//        final FirebaseUser fuser = FirebaseAuth.getInstance().getCurrentUser();
+//        DatabaseReference rf = FirebaseDatabase.getInstance().getReference("Users");
+//
+//        rf.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                listUser.clear();
+//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                    User user = snapshot.getValue(User.class);
+//                    String str = StringUtils.unAccent(user.getUserName().toLowerCase());
+//                    if (str.startsWith(string)
+//                            && !user.getId().equals(fuser.getUid())) {
+//                        listUser.add(user);
+//                    }
+//                }
+//
+//                mAdapter = new UserAdapter(listUser, getContext(), false);
+//                recyclerView.setAdapter(mAdapter);
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
 
-        rf.addValueEventListener(new ValueEventListener() {
+        socket.emit("searchUser", string).on("resultSearchUser", new Emitter.Listener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                listUser.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    User user = snapshot.getValue(User.class);
-                    String str = StringUtils.unAccent(user.getUserName().toLowerCase());
-                    if (str.startsWith(string)
-                            && !user.getId().equals(fuser.getUid())) {
-                        listUser.add(user);
+            public void call(final Object... args) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        JSONArray data = (JSONArray) args[0];
+                        try {
+                            listUser = new ArrayList<>();
+                            User user;
+                            for (int i = 0; i < data.length(); i++) {
+                                JSONObject current = data.getJSONObject(i);
+                                user = new User(Integer.parseInt(current.getString("id")),
+                                        current.getString("phone"),
+                                        current.getString("email"),
+                                        current.getString("password"),
+                                        current.getString("full_name"),
+                                        current.getString("preferences"),
+                                        current.getString("created_at"),
+                                        current.getBoolean("status"),
+                                        current.getString("url"));
+                                listUser.add(user);
+                            }
+                            mAdapter = new UserAdapter(listUser, getContext(), false);
+                            recyclerView.setAdapter(mAdapter);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
-
-                mAdapter = new UserAdapter(listUser, getContext(), false);
-                recyclerView.setAdapter(mAdapter);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                });
             }
         });
-
-        /**
-         * Query query = FirebaseDatabase.getInstance().getReference("Users")
-         *                 .orderByChild("userName")
-         *                 .startAt(string)
-         *                 .endAt(string +"\uf8ff");
-         *
-         *         query.addValueEventListener(new ValueEventListener() {
-         *             @Override
-         *             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-         *                 listUser.clear();
-         *                 for (DataSnapshot snapshot :dataSnapshot.getChildren()){
-         *                     User user = snapshot.getValue(User.class);
-         *                     if (!user.getId().equals(firebaseUser.getUid())){
-         *                         listUser.add(user);
-         *                     }
-         *                 }
-         *                 mAdapter = new UserAdapter(listUser, getContext(),false);
-         *                 recyclerView.setAdapter(mAdapter);
-         *             }
-         *
-         *             @Override
-         *             public void onCancelled(@NonNull DatabaseError databaseError) {
-         *
-         *             }
-         *         });
-         */
     }
 
 }

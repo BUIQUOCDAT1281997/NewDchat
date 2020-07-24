@@ -19,23 +19,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".Activity.FilterActivity"
-            android:launchMode="singleTask">
-
-            <!-- This activity handles "SEND" actions with text data -->
-            <intent-filter>
-                <action android:name="android.intent.action.SEND"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data android:mimeType="text/plain"/>
-            </intent-filter>
-            <!-- This activity also handles "SEND" and "SEND_MULTIPLE" with media data  <data android:mimeType="video/*"/> -->
-            <intent-filter>
-                <action android:name="android.intent.action.SEND"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data android:mimeType="image/*"/>
-            </intent-filter>
-        </activity>
         <activity android:name=".Activity.ShowPictureActivity" />
         <activity android:name=".Activity.CommentActivity" />
         <activity android:name=".Activity.ProfileFriendActivity" />

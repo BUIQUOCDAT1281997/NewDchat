@@ -5,7 +5,9 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -34,8 +36,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import bui.quocdat.dchat.Other.LoadingDialog;
+import bui.quocdat.dchat.Other.Strings;
 import bui.quocdat.dchat.R;
+import bui.quocdat.dchat.Socketconnetion.SocketManager;
 
+import com.github.nkzawa.emitter.Emitter;
+import com.github.nkzawa.socketio.client.Socket;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -48,6 +54,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -81,6 +90,11 @@ public class CreateNewPostFragment extends Fragment implements View.OnClickListe
     //FireBase
     private FirebaseUser firebaseUser;
     private DatabaseReference reference;
+
+    //my server
+    private String id;
+    private Socket socket;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -124,6 +138,11 @@ public class CreateNewPostFragment extends Fragment implements View.OnClickListe
         TextView tvPost = view.findViewById(R.id.new_post_create);
         tvPost.setOnClickListener(this);
         picturePost.setOnClickListener(this);
+
+        socket = SocketManager.getInstance().getSocket();
+
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Strings.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        id = sharedPreferences.getString(Strings.USER_ID, "");
     }
 
     private void initFireBase(){
@@ -141,7 +160,9 @@ public class CreateNewPostFragment extends Fragment implements View.OnClickListe
                 break;
             case R.id.new_post_create:
                 if (!contentPost.getText().toString().isEmpty()){
-                    uploadPost();
+//                    uploadPost();
+                    if (imageUri != null)
+                    fileUploader();
                 }
                 break;
             default:
@@ -235,6 +256,8 @@ public class CreateNewPostFragment extends Fragment implements View.OnClickListe
     }
 
     private void fileUploader() {
+        loadingDialog.startLoadingDialog();
+
         final StorageReference fileReference = mStorageRef.child(System.currentTimeMillis()
                 + "." + getFileExtension(imageUri));
 
@@ -254,18 +277,41 @@ public class CreateNewPostFragment extends Fragment implements View.OnClickListe
                     Uri downloadUri = task.getResult();
                     String mUri = downloadUri.toString();
 
-                    HashMap<String, Object> hashMap = new HashMap<>();
-                    hashMap.put("picturePost", mUri);
-                    reference.updateChildren(hashMap);
+                    JSONObject object= new JSONObject();
+                    try {
+                        object.put("user_id", id);
+                        object.put("caption", contentPost.getText().toString().trim());
+                        object.put("url", mUri);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
 
-                    DatabaseReference toAllPicture = FirebaseDatabase
-                            .getInstance()
-                            .getReference("Pictures");
-                    DatabaseReference refAvatar = toAllPicture.child("PostPicture").child(firebaseUser.getUid());
-                    HashMap<String, Object> hmAvatar = new HashMap<>();
-                    hmAvatar.put("url", mUri);
-                    hmAvatar.put("timeUpload",getCurrentTime());
-                    refAvatar.push().setValue(hmAvatar);
+                    socket.emit("newPost", object).on("resultNewPost", new Emitter.Listener() {
+                        @Override
+                        public void call(Object... args) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    loadingDialog.dismissDialog();
+                                    navController.navigate(R.id.action_createNewPostFragment_to_newsFragment);
+                                }
+                            });
+                        }
+                    });
+
+
+//                    HashMap<String, Object> hashMap = new HashMap<>();
+//                    hashMap.put("picturePost", mUri);
+//                    reference.updateChildren(hashMap);
+//
+//                    DatabaseReference toAllPicture = FirebaseDatabase
+//                            .getInstance()
+//                            .getReference("Pictures");
+//                    DatabaseReference refAvatar = toAllPicture.child("PostPicture").child(firebaseUser.getUid());
+//                    HashMap<String, Object> hmAvatar = new HashMap<>();
+//                    hmAvatar.put("url", mUri);
+//                    hmAvatar.put("timeUpload",getCurrentTime());
+//                    refAvatar.push().setValue(hmAvatar);
 
                 } else {
                     Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();
@@ -277,8 +323,10 @@ public class CreateNewPostFragment extends Fragment implements View.OnClickListe
             @Override
             public void onFailure(@NonNull Exception e) {
                 Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                loadingDialog.dismissDialog();
             }
         });
+
     }
 
     private String getFileExtension(Uri uri) {

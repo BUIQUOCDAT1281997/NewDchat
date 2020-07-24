@@ -1,24 +1,90 @@
 package bui.quocdat.dchat.Other;
 
 public class Post {
-
-    private String senderID;
+    private int id;
+    private int user_id;
     private String caption;
-    private String picturePost;
-    private String nameReference;
-    private String currentTime;
-    private String counterLikes;
+    private int media_id;
+    private int sum_likes;
+    private int sum_comments;
+    private String created_at;
+    private String urlUser;
+    private String urlPost;
+    private String fullName;
 
-    public Post(String senderID, String caption, String picturePost, String nameReference, String currentTime, String counterLikes) {
-        this.senderID = senderID;
+    public Post(int id, int user_id, String caption, int media_id, int sum_likes, int sum_comments, String created_at) {
+        this.id = id;
+        this.user_id = user_id;
         this.caption = caption;
-        this.picturePost = picturePost;
-        this.nameReference = nameReference;
-        this.currentTime = currentTime;
-        this.counterLikes = counterLikes;
+        this.media_id = media_id;
+        this.sum_likes = sum_likes;
+        this.sum_comments = sum_comments;
+        this.created_at = created_at;
     }
 
-    public Post() {
+    public Post(int id, int user_id, String caption, int media_id, int sum_likes, int sum_comments, String created_at, String urlUser, String urlPost) {
+        this.id = id;
+        this.user_id = user_id;
+        this.caption = caption;
+        this.media_id = media_id;
+        this.sum_likes = sum_likes;
+        this.sum_comments = sum_comments;
+        this.created_at = created_at;
+        this.urlUser = urlUser;
+        this.urlPost = urlPost;
+    }
+
+    public Post(int id, int user_id, String caption, int media_id, int sum_likes, int sum_comments, String created_at, String urlUser, String urlPost, String fullName) {
+        this.id = id;
+        this.user_id = user_id;
+        this.caption = caption;
+        this.media_id = media_id;
+        this.sum_likes = sum_likes;
+        this.sum_comments = sum_comments;
+        this.created_at = created_at;
+        this.urlUser = urlUser;
+        this.urlPost = urlPost;
+        this.fullName = fullName;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getUrlUser() {
+        return urlUser;
+    }
+
+    public void setUrlUser(String urlUser) {
+        this.urlUser = urlUser;
+    }
+
+    public String getUrlPost() {
+        return urlPost;
+    }
+
+    public void setUrlPost(String urlPost) {
+        this.urlPost = urlPost;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(int user_id) {
+        this.user_id = user_id;
     }
 
     public String getCaption() {
@@ -29,43 +95,35 @@ public class Post {
         this.caption = caption;
     }
 
-    public String getPicturePost() {
-        return picturePost;
+    public int getMedia_id() {
+        return media_id;
     }
 
-    public void setPicturePost(String picturePost) {
-        this.picturePost = picturePost;
+    public void setMedia_id(int media_id) {
+        this.media_id = media_id;
     }
 
-    public String getNameReference() {
-        return nameReference;
+    public int getSum_likes() {
+        return sum_likes;
     }
 
-    public void setNameReference(String nameReference) {
-        this.nameReference = nameReference;
+    public void setSum_likes(int sum_likes) {
+        this.sum_likes = sum_likes;
     }
 
-    public String getCurrentTime() {
-        return currentTime;
+    public int getSum_comments() {
+        return sum_comments;
     }
 
-    public void setCurrentTime(String currentTime) {
-        this.currentTime = currentTime;
+    public void setSum_comments(int sum_comments) {
+        this.sum_comments = sum_comments;
     }
 
-    public String getSenderID() {
-        return senderID;
+    public String getCreated_at() {
+        return created_at;
     }
 
-    public void setSenderID(String senderID) {
-        this.senderID = senderID;
-    }
-
-    public String getCounterLikes() {
-        return counterLikes;
-    }
-
-    public void setCounterLikes(String counterLikes) {
-        this.counterLikes = counterLikes;
+    public void setCreated_at(String created_at) {
+        this.created_at = created_at;
     }
 }

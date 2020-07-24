@@ -72,4 +72,7 @@ dependencies {
 
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.19'
 
+    //socket
+    implementation 'com.github.nkzawa:socket.io-client:0.6.0'
+
 }
