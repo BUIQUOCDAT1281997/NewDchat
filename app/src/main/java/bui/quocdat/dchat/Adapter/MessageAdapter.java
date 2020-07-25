@@ -16,6 +16,8 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 
+import bui.quocdat.dchat.Other.Message;
+import bui.quocdat.dchat.Other.Strings;
 import bui.quocdat.dchat.R;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -27,10 +29,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     private FirebaseUser firebaseUser;
 
     private String imageUrl;
-    private List<Chat> mListData;
+    private List<Message> mListData;
     private Context context;
 
-    public MessageAdapter(List<Chat> mListData, String imageUrl, Context context) {
+    public MessageAdapter(List<Message> mListData, String imageUrl, Context context) {
         this.mListData = mListData;
         this.imageUrl = imageUrl;
         this.context = context;
@@ -52,20 +54,20 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
     @Override
     public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
-        Chat chat = mListData.get(position);
-        holder.textView.setText(chat.getMessage());
-        if (!imageUrl.equals("default") && holder.circleImageView != null) {
+        Message message = mListData.get(position);
+        holder.textView.setText(message.getText());
+        if (!imageUrl.isEmpty() && holder.circleImageView != null) {
             Glide.with(context).load(imageUrl).into(holder.circleImageView);
         }
-        if (position == mListData.size() - 1 && holder.circleImageView == null) {
-            if (chat.getIsSeen().equals("true")) {
-                holder.tvSeen.setText(context.getResources().getString(R.string.seen));
-            } else {
-                holder.tvSeen.setText(context.getResources().getString(R.string.not_seen));
-            }
-        } else if (holder.tvSeen != null) {
-            holder.tvSeen.setVisibility(View.GONE);
-        }
+//        if (position == mListData.size() - 1 && holder.circleImageView == null) {
+//            if (chat.getIsSeen().equals("true")) {
+//                holder.tvSeen.setText(context.getResources().getString(R.string.seen));
+//            } else {
+//                holder.tvSeen.setText(context.getResources().getString(R.string.not_seen));
+//            }
+//        } else if (holder.tvSeen != null) {
+//            holder.tvSeen.setVisibility(View.GONE);
+//        }
 
     }
 
@@ -91,7 +93,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     @Override
     public int getItemViewType(int position) {
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (mListData.get(position).getSender().equals(firebaseUser.getUid())) {
+        if (String.valueOf(mListData.get(position).getSender_id()).equals(context.getSharedPreferences(Strings.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).getString(Strings.USER_ID, ""))) {
             return VIEW_TYPE_RIGHT;
         } else {
             return VIEW_TYPE_LEFT;
