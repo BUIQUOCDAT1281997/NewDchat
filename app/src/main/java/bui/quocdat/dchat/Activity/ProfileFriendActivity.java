@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -18,9 +20,13 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import bui.quocdat.dchat.Adapter.PictureAdapter;
 import bui.quocdat.dchat.Other.Picture;
+import bui.quocdat.dchat.Other.Strings;
 import bui.quocdat.dchat.Other.User;
 import bui.quocdat.dchat.R;
+import bui.quocdat.dchat.Socketconnetion.SocketManager;
 
+import com.github.nkzawa.emitter.Emitter;
+import com.github.nkzawa.socketio.client.Socket;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,6 +39,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,10 +67,18 @@ public class ProfileFriendActivity extends AppCompatActivity {
 
     private DatabaseReference reference;
 
+    private Socket socket;
+
+    private String id;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_friend);
+
+        SharedPreferences sharedPreferences = getSharedPreferences(Strings.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        id = sharedPreferences.getString(Strings.USER_ID, "");
 
 
        /*
@@ -78,37 +95,60 @@ public class ProfileFriendActivity extends AppCompatActivity {
 
         initView();
 
-        setupPictureRecyclerview();
+//        setupPictureRecyclerview();
 
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
-        reference.addValueEventListener(new ValueEventListener() {
+//        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
+//        reference.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                    User user = snapshot.getValue(User.class);
+//                    if (user.getId().equals(userId)) {
+//                        //imgUser
+//                        if (!user.getAvatarURL().equals("default")) {
+//                            try {
+//                                Glide.with(getApplicationContext())
+//                                        .load(user.getAvatarURL())
+//                                        .placeholder(R.drawable.ic_user)
+//                                        .into(imgUser);
+//                            } catch (NullPointerException e) {
+//                                Toast.makeText(getApplicationContext(), "failed", Toast.LENGTH_LONG).show();
+//                            }
+//                        }
+//                        //tvUserName
+//                        tvUserName.setText(user.getUserName());
+//                        tvStatus.setText(user.getStatus());
+//                        break;
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+        socket.emit("getInfOfUser", id).on("resultInfOfUser", new Emitter.Listener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    User user = snapshot.getValue(User.class);
-                    if (user.getId().equals(userId)) {
-                        //imgUser
-                        if (!user.getAvatarURL().equals("default")) {
-                            try {
+            public void call(final Object... args) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        JSONObject infUser = (JSONObject) args[0];
+                        try {
+                            String url = infUser.getString("url");
+                            if (!url.isEmpty()) {
                                 Glide.with(getApplicationContext())
-                                        .load(user.getAvatarURL())
-                                        .placeholder(R.drawable.ic_user)
+                                        .load(url)
                                         .into(imgUser);
-                            } catch (NullPointerException e) {
-                                Toast.makeText(getApplicationContext(), "failed", Toast.LENGTH_LONG).show();
                             }
+                            tvUserName.setText(infUser.getString("last_name"));
+                            tvStatus.setText(infUser.getString("preferences"));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                        //tvUserName
-                        tvUserName.setText(user.getUserName());
-                        tvStatus.setText(user.getStatus());
-                        break;
                     }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                });
             }
         });
 
@@ -231,6 +271,8 @@ public class ProfileFriendActivity extends AppCompatActivity {
         tvUserName = findViewById(R.id.tv_user_name);
         tvStatus = findViewById(R.id.tv_status_user_name);
 
+        socket = SocketManager.getInstance().getSocket();
+
         //firebase
         userId = getIntent().getStringExtra("userID");
         mStorageRef = FirebaseStorage.getInstance().getReference("uploads").child(userId);
@@ -248,38 +290,44 @@ public class ProfileFriendActivity extends AppCompatActivity {
 
     }
 
-    private void setOnOff(String onOff) {
-        HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("online", onOff);
+//    private void setOnOff(String onOff) {
+//        HashMap<String, Object> hashMap = new HashMap<>();
+//        hashMap.put("online", onOff);
+//
+//        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+//
+//        DatabaseReference databaseReference = FirebaseDatabase
+//                .getInstance()
+//                .getReference("Status")
+//                .child(firebaseUser.getUid());
+//
+//        databaseReference.updateChildren(hashMap);
+//    }
 
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-
-        DatabaseReference databaseReference = FirebaseDatabase
-                .getInstance()
-                .getReference("Status")
-                .child(firebaseUser.getUid());
-
-        databaseReference.updateChildren(hashMap);
+    private void setStatus(Boolean isOnline) {
+        if (isOnline) {
+            socket.emit("setOnline", id);
+        } else socket.emit("setOffline", id);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        setOnOff("online");
+//        setOnOff("online");
+        setStatus(true);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        setOnOff("offline");
+//        setOnOff("offline");
+        setStatus(false);
     }
 
     private void changeStatusBarColor() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(Color.BLACK);
-        }
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(Color.BLACK);
     }
 
 }

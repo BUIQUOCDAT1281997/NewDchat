@@ -9,8 +9,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -27,9 +29,13 @@ import com.bumptech.glide.Glide;
 import bui.quocdat.dchat.Adapter.PictureAdapter;
 import bui.quocdat.dchat.Other.LoadingDialog;
 import bui.quocdat.dchat.Other.Picture;
+import bui.quocdat.dchat.Other.Strings;
 import bui.quocdat.dchat.Other.User;
 import bui.quocdat.dchat.R;
+import bui.quocdat.dchat.Socketconnetion.SocketManager;
 
+import com.github.nkzawa.emitter.Emitter;
+import com.github.nkzawa.socketio.client.Socket;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -46,6 +52,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -77,40 +86,70 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private FirebaseUser firebaseUser;
     private DatabaseReference reference;
 
+    // my server
+    private Socket socket;
+    private String id;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+        SharedPreferences sharedPreferences = getSharedPreferences(Strings.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        id = sharedPreferences.getString(Strings.USER_ID, "");
+
         initView();
 
-        setupPictureRecyclerview();
-
-        reference.addValueEventListener(new ValueEventListener() {
+        socket.emit("getInfOfUser", id).on("resultInfOfUser", new Emitter.Listener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                User user = dataSnapshot.getValue(User.class);
-                //activity.getSupportActionBar().setTitle(user.getUserName());
-                tvUserName.setText(user.getUserName());
-
-                if (!user.getAvatarURL().equals("default")) {
-
-                    try {
-                        Glide.with(getApplicationContext())
-                                .load(user.getAvatarURL())
-                                .into(imgUser);
-                    }catch (NullPointerException ignored){
-                        Log.e("Error", ignored.getMessage());
+            public void call(final Object... args) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        JSONObject infUser = (JSONObject) args[0];
+                        try {
+                            String url = infUser.getString("url");
+                            if (!url.isEmpty()) {
+                                Glide.with(getApplicationContext())
+                                        .load(url)
+                                        .into(imgUser);
+                            }
+                            tvUserName.setText(infUser.getString("last_name"));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
-
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                });
             }
         });
+
+//        setupPictureRecyclerview();
+
+//        reference.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                User user = dataSnapshot.getValue(User.class);
+//                //activity.getSupportActionBar().setTitle(user.getUserName());
+//                tvUserName.setText(user.getUserName());
+//
+//                if (!user.getAvatarURL().equals("default")) {
+//
+//                    try {
+//                        Glide.with(getApplicationContext())
+//                                .load(user.getAvatarURL())
+//                                .into(imgUser);
+//                    }catch (NullPointerException ignored){
+//                        Log.e("Error", ignored.getMessage());
+//                    }
+//
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
     }
 
     private void initView() {
@@ -125,6 +164,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setTitleTextAppearance(getContext(), R.style.ToolbarTheme);
          */
+
+        socket = SocketManager.getInstance().getSocket();
 
         tvUserName = findViewById(R.id.tv_user_name);
         findViewById(R.id.img_change_picture).setOnClickListener(this);
@@ -200,20 +241,34 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             public void onComplete(@NonNull Task<Uri> task) {
                 if (task.isSuccessful()) {
                     Uri downloadUri = task.getResult();
-                    String mUri = downloadUri.toString();
+                    final String mUri = downloadUri.toString();
 
-                    HashMap<String, Object> hashMap = new HashMap<>();
-                    hashMap.put("avatarURL", mUri);
-                    reference.updateChildren(hashMap);
+//                    HashMap<String, Object> hashMap = new HashMap<>();
+//                    hashMap.put("avatarURL", mUri);
+//                    reference.updateChildren(hashMap);
+//
+//                    DatabaseReference toAllPicture = FirebaseDatabase
+//                            .getInstance()
+//                            .getReference("Pictures");
+//                    DatabaseReference refAvatar = toAllPicture.child("AvatarPicture").child(firebaseUser.getUid());
+//                    HashMap<String, Object> hmAvatar = new HashMap<>();
+//                    hmAvatar.put("url", mUri);
+//                    hmAvatar.put("timeUpload","default");
+//                    refAvatar.push().setValue(hmAvatar);
 
-                    DatabaseReference toAllPicture = FirebaseDatabase
-                            .getInstance()
-                            .getReference("Pictures");
-                    DatabaseReference refAvatar = toAllPicture.child("AvatarPicture").child(firebaseUser.getUid());
-                    HashMap<String, Object> hmAvatar = new HashMap<>();
-                    hmAvatar.put("url", mUri);
-                    hmAvatar.put("timeUpload","default");
-                    refAvatar.push().setValue(hmAvatar);
+                    socket.emit("updatePictureUser", mUri, id).on("success", new Emitter.Listener() {
+                        @Override
+                        public void call(Object... args) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Glide.with(getApplicationContext())
+                                            .load(mUri)
+                                            .into(imgUser);
+                                }
+                            });
+                        }
+                    });
 
                 } else {
                     Toast.makeText(ProfileActivity.this, "Failed", Toast.LENGTH_SHORT).show();
@@ -295,73 +350,83 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         startActivityForResult(intent, CAMERA);
     }
 
-    private void setOnOff(String onOff) {
-        HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("online", onOff);
+//    private void setOnOff(String onOff) {
+//        HashMap<String, Object> hashMap = new HashMap<>();
+//        hashMap.put("online", onOff);
+//
+//        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+//
+//        DatabaseReference databaseReference = FirebaseDatabase
+//                .getInstance()
+//                .getReference("Status")
+//                .child(firebaseUser.getUid());
+//
+//        databaseReference.updateChildren(hashMap);
+//    }
 
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+//    private void setupPictureRecyclerview() {
+//
+//        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Pictures").child("AvatarPicture").child(firebaseUser.getUid());
+//        ref.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                listPicture.clear();
+//                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+//                    Picture picture = snapshot.getValue(Picture.class);
+//                    listPicture.add(picture.getUrl());
+//                }
+//
+//                addPictureFromPost();
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+//    }
 
-        DatabaseReference databaseReference = FirebaseDatabase
-                .getInstance()
-                .getReference("Status")
-                .child(firebaseUser.getUid());
+//    private void addPictureFromPost() {
+//        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Pictures").child("PostPicture").child(firebaseUser.getUid());
+//        databaseReference.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+//                    Picture picture = snapshot.getValue(Picture.class);
+//                    listPicture.add(picture.getUrl());
+//                }
+//                mAdapter = new PictureAdapter(listPicture, getApplicationContext());
+//                recyclerView.setAdapter(mAdapter);
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+//    }
 
-        databaseReference.updateChildren(hashMap);
-    }
-
-    private void setupPictureRecyclerview() {
-
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Pictures").child("AvatarPicture").child(firebaseUser.getUid());
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                listPicture.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    Picture picture = snapshot.getValue(Picture.class);
-                    listPicture.add(picture.getUrl());
-                }
-
-                addPictureFromPost();
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    private void addPictureFromPost() {
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Pictures").child("PostPicture").child(firebaseUser.getUid());
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    Picture picture = snapshot.getValue(Picture.class);
-                    listPicture.add(picture.getUrl());
-                }
-                mAdapter = new PictureAdapter(listPicture, getApplicationContext());
-                recyclerView.setAdapter(mAdapter);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+    private void setStatus(Boolean isOnline) {
+        if (isOnline) {
+            socket.emit("setOnline", id);
+        } else socket.emit("setOffline", id);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        setOnOff("online");
+//        setOnOff("online");
+        setStatus(true);
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        setOnOff("offline");
+//        setOnOff("offline");
+        setStatus(false);
+
     }
 
     @Override
