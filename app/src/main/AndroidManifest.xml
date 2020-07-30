@@ -20,7 +20,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".Activity.ShowPictureActivity" />
-        <activity android:name=".Activity.CommentActivity" />
         <activity android:name=".Activity.ProfileFriendActivity" />
         <activity android:name=".Activity.ProfileActivity" />
         <activity android:name=".Activity.SplashActivity">

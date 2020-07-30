@@ -12,21 +12,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
-import bui.quocdat.dchat.Activity.ChatActivity;
-import bui.quocdat.dchat.Other.Chat;
-import bui.quocdat.dchat.Other.Status;
-import bui.quocdat.dchat.Other.User;
-
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
 import java.util.List;
 
+import bui.quocdat.dchat.Activity.ChatActivity;
+import bui.quocdat.dchat.Other.User;
 import bui.quocdat.dchat.R;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -151,28 +140,4 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 //        });
 //    }
 
-//    private void setBorderImgUser(final CircleImageView imgUser, final String userID) {
-//        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Status");
-//        reference.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-//                    Status status = snapshot.getValue(Status.class);
-//                    if (status.getId().equals(userID)) {
-//                        if (status.getOnline().equals("online")) {
-//                            imgUser.setBorderWidth((int) mContext.getResources().getDimension(R.dimen.border_online));
-//                        } else {
-//                            imgUser.setBorderWidth((int) mContext.getResources().getDimension(R.dimen.border_offline));
-//                        }
-//                        break;
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
-//    }
 }

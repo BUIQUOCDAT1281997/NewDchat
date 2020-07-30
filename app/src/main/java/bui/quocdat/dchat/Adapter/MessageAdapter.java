@@ -10,9 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import bui.quocdat.dchat.Other.Chat;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 
@@ -25,8 +22,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
     public static final int VIEW_TYPE_RIGHT = 1;
     public static final int VIEW_TYPE_LEFT = 0;
-
-    private FirebaseUser firebaseUser;
 
     private String imageUrl;
     private List<Message> mListData;
@@ -44,11 +39,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         if (viewType == VIEW_TYPE_RIGHT) {
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_chat_right, parent, false);
-            return new MessageAdapter.MessageViewHolder(view);
+            return new MessageViewHolder(view);
         } else {
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_chat_lest, parent, false);
-            return new MessageAdapter.MessageViewHolder(view);
+            return new MessageViewHolder(view);
         }
     }
 
@@ -59,15 +54,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         if (!imageUrl.isEmpty() && holder.circleImageView != null) {
             Glide.with(context).load(imageUrl).into(holder.circleImageView);
         }
-//        if (position == mListData.size() - 1 && holder.circleImageView == null) {
-//            if (chat.getIsSeen().equals("true")) {
-//                holder.tvSeen.setText(context.getResources().getString(R.string.seen));
-//            } else {
-//                holder.tvSeen.setText(context.getResources().getString(R.string.not_seen));
-//            }
-//        } else if (holder.tvSeen != null) {
-//            holder.tvSeen.setVisibility(View.GONE);
-//        }
 
     }
 
@@ -76,7 +62,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         return mListData.size();
     }
 
-    public class MessageViewHolder extends RecyclerView.ViewHolder {
+    public static class MessageViewHolder extends RecyclerView.ViewHolder {
 
         public CircleImageView circleImageView;
         public TextView textView;
@@ -92,7 +78,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
     @Override
     public int getItemViewType(int position) {
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         if (String.valueOf(mListData.get(position).getSender_id()).equals(context.getSharedPreferences(Strings.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).getString(Strings.USER_ID, ""))) {
             return VIEW_TYPE_RIGHT;
         } else {

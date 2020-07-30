@@ -59,12 +59,9 @@ public class NewsFragment extends Fragment {
 
     private LinearLayout linearLayoutLoaderView;
 
-    //FireBase
-    private FirebaseUser firebaseUser;
-    private DatabaseReference referenceFromPosts;
-
     // my server
     private Socket socket;
+    private String id;
 
 
     @Override
@@ -73,90 +70,70 @@ public class NewsFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_news_new, container, false);
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Strings.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-        String id = sharedPreferences.getString(Strings.USER_ID, "");
+        id = sharedPreferences.getString(Strings.USER_ID, "");
 
         initViewAndFireBase(rootView);
 
-
-        //load image to avatarUser
-//        DatabaseReference referenceFromUsers = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
-//        referenceFromUsers.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                User user = dataSnapshot.getValue(User.class);
-//                if (!user.getAvatarURL().equals("default")) {
-//                    try {
-//                        Glide.with(getActivity().getApplicationContext())
-//                                .load(user.getAvatarURL())
-//                                .placeholder(R.drawable.ic_user)
-//                                .into(imageCurrentUser);
-//                    }catch (NullPointerException ignored){
-//                        Log.e("Error", ignored.getMessage());
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
-
-
-//        readAllPost();
-
         //my server
-        socket.emit("infAndListPosts", id).on("resultInfAndListPost", new Emitter.Listener() {
-            @Override
-            public void call(final Object... args) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        JSONObject infUser = (JSONObject) args[0];
-                        try {
-                            String url = infUser.getString("url");
-                            if (!url.isEmpty()) {
-                                Glide.with(getActivity())
-                                        .load(url)
-                                        .into(imageCurrentUser);
-                            }
-                            //TODO
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        JSONArray listData = (JSONArray) args[1];
-                        try {
-                            Post post;
-                            JSONObject current;
-                            for (int i = 0; i < listData.length(); i++) {
-                                current = listData.getJSONObject(i);
-                                post = new Post(Integer.parseInt(current.getString("id"))
-                                        , Integer.parseInt(current.getString("user_id"))
-                                        , current.getString("caption")
-                                        , Integer.parseInt(current.getString("media_id"))
-                                        , Integer.parseInt(current.getString("sum_like"))
-                                        , Integer.parseInt(current.getString("sum_comments"))
-                                        , current.getString("urlUser")
-                                        , current.getString("urlPost")
-                                        , current.getString("full_name")
-                                        , current.getString("created_at"));
-                                listPost.add(post);
-                            }
-                            Collections.reverse(listPost);
-                            recyclerView.setVisibility(View.VISIBLE);
-                            linearLayoutLoaderView.setVisibility(View.GONE);
-                            postAdapter = new PostAdapter(listPost, getContext(), false);
-                            recyclerView.setAdapter(postAdapter);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-            }
-        });
+        reloadPosts();
 
         return rootView;
     }
+
+    public void reloadPosts() {
+        listPost = new ArrayList<>();
+        socket.emit("infAndListPosts", id).on("resultInfAndListPost", new Emitter.Listener() {
+            @Override
+            public void call(final Object... args) {
+                if (getActivity()!=null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            JSONObject infUser = (JSONObject) args[0];
+                            try {
+                                String url = infUser.getString("url");
+                                if (!url.isEmpty()) {
+                                    Glide.with(getActivity())
+                                            .load(url)
+                                            .into(imageCurrentUser);
+                                }
+                                //TODO
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            JSONArray listData = (JSONArray) args[1];
+                            try {
+                                Post post;
+                                JSONObject current;
+                                for (int i = 0; i < listData.length(); i++) {
+                                    current = listData.getJSONObject(i);
+                                    post = new Post(Integer.parseInt(current.getString("id"))
+                                            , Integer.parseInt(current.getString("user_id"))
+                                            , current.getString("caption")
+                                            , Integer.parseInt(current.getString("media_id"))
+                                            , Integer.parseInt(current.getString("sum_like"))
+                                            , Integer.parseInt(current.getString("sum_comments"))
+                                            , current.getString("created_at")
+                                            , current.getString("urlUser")
+                                            , current.getString("urlPost")
+                                            , current.getString("full_name"));
+                                    listPost.add(post);
+                                }
+                                Collections.reverse(listPost);
+                                recyclerView.setVisibility(View.VISIBLE);
+                                linearLayoutLoaderView.setVisibility(View.GONE);
+                                postAdapter = new PostAdapter(listPost, getContext(), NewsFragment.this);
+                                recyclerView.setAdapter(postAdapter);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
+
 
 
     private void initViewAndFireBase(View view) {
@@ -168,43 +145,7 @@ public class NewsFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
 
         socket = SocketManager.getInstance().getSocket();
-
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        referenceFromPosts = FirebaseDatabase.getInstance().getReference("Posts");
-
-        listPost = new ArrayList<>();
     }
-
-//    private void readAllPost(){
-//
-//        listData.clear();
-//
-//        referenceFromPosts.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                listData.clear();
-//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-//                    Post post = snapshot.getValue(Post.class);
-//                    /*
-//                    if ((!post.getSenderID().equals(firebaseUser.getUid()))){
-//                        listData.add(post);
-//                    }
-//                     */
-//                    listData.add(post);
-//                }
-//                Collections.reverse(listData);
-//                recyclerView.setVisibility(View.VISIBLE);
-//                linearLayoutLoaderView.setVisibility(View.GONE);
-//                postAdapter = new PostAdapter(listData, getContext(), false);
-//                recyclerView.setAdapter(postAdapter);
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
-//    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {

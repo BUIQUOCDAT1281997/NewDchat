@@ -87,10 +87,6 @@ public class CreateNewPostFragment extends Fragment implements View.OnClickListe
 
     private String currentTime;
 
-    //FireBase
-    private FirebaseUser firebaseUser;
-    private DatabaseReference reference;
-
     //my server
     private String id;
     private Socket socket;
@@ -147,9 +143,7 @@ public class CreateNewPostFragment extends Fragment implements View.OnClickListe
 
     private void initFireBase(){
         currentTime = String.valueOf(System.currentTimeMillis());
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        reference = FirebaseDatabase.getInstance().getReference("Posts").child(currentTime+firebaseUser.getUid());
-        mStorageRef = FirebaseStorage.getInstance().getReference("uploads").child(firebaseUser.getUid());
+        mStorageRef = FirebaseStorage.getInstance().getReference("uploads").child("posts");
     }
 
     @Override
@@ -208,40 +202,6 @@ public class CreateNewPostFragment extends Fragment implements View.OnClickListe
         }
     }
 
-    private void uploadPost() {
-
-        final HashMap<String, Object> hashMap = new HashMap<>();
-
-        hashMap.put("nameReference",currentTime+firebaseUser.getUid());
-        hashMap.put("senderID",firebaseUser.getUid());
-        hashMap.put("picturePost","default");
-        hashMap.put("currentTime", getCurrentTime());
-        hashMap.put("caption",contentPost.getText().toString().trim());
-
-        loadingDialog.startLoadingDialog();
-
-        reference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-
-                    if (imageUri!=null){
-                        if (uploadTask != null && uploadTask.isInProgress()) {
-                            Toast.makeText(getContext(), "Upload in progress", Toast.LENGTH_LONG).show();
-                        } else
-                            fileUploader();
-                    }
-
-                    navController.navigate(R.id.action_createNewPostFragment_to_newsFragment);
-
-                }else {
-                    Toast.makeText(getContext(), "error", Toast.LENGTH_SHORT).show();
-                    loadingDialog.dismissDialog();
-                }
-            }
-        });
-    }
-
     private String getCurrentTime() {
 
         Calendar calendar = Calendar.getInstance();
@@ -289,29 +249,17 @@ public class CreateNewPostFragment extends Fragment implements View.OnClickListe
                     socket.emit("newPost", object).on("resultNewPost", new Emitter.Listener() {
                         @Override
                         public void call(Object... args) {
-                            getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    loadingDialog.dismissDialog();
-                                    navController.navigate(R.id.action_createNewPostFragment_to_newsFragment);
-                                }
-                            });
+                            if (getActivity()!=null) {
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        loadingDialog.dismissDialog();
+                                        navController.navigate(R.id.action_createNewPostFragment_to_newsFragment);
+                                    }
+                                });
+                            }
                         }
                     });
-
-
-//                    HashMap<String, Object> hashMap = new HashMap<>();
-//                    hashMap.put("picturePost", mUri);
-//                    reference.updateChildren(hashMap);
-//
-//                    DatabaseReference toAllPicture = FirebaseDatabase
-//                            .getInstance()
-//                            .getReference("Pictures");
-//                    DatabaseReference refAvatar = toAllPicture.child("PostPicture").child(firebaseUser.getUid());
-//                    HashMap<String, Object> hmAvatar = new HashMap<>();
-//                    hmAvatar.put("url", mUri);
-//                    hmAvatar.put("timeUpload",getCurrentTime());
-//                    refAvatar.push().setValue(hmAvatar);
 
                 } else {
                     Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();

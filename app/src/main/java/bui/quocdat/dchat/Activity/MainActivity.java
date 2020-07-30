@@ -1,18 +1,19 @@
 package bui.quocdat.dchat.Activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.NavigationUI;
-
-
 import android.content.Context;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.NavigationUI;
+
+import com.github.nkzawa.socketio.client.Socket;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import bui.quocdat.dchat.ConnectivityReceiver;
 import bui.quocdat.dchat.Other.MyApplication;
@@ -20,23 +21,10 @@ import bui.quocdat.dchat.Other.Strings;
 import bui.quocdat.dchat.R;
 import bui.quocdat.dchat.Socketconnetion.SocketManager;
 
-import com.github.nkzawa.socketio.client.Socket;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
-import java.util.HashMap;
-
 
 public class MainActivity extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener {
 
     private NavController navController;
-
-    //FireBase
-    private DatabaseReference reference;
-    private FirebaseUser firebaseUser;
 
     private ConnectivityReceiver receiver;
 
@@ -57,9 +45,6 @@ public class MainActivity extends AppCompatActivity implements ConnectivityRecei
 
         socket = SocketManager.getInstance().getSocket();
 
-        //init view
-//        initFireBase();
-
         navController = Navigation.findNavController(this, R.id.nav_host_fragment_main);
         BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
         NavigationUI.setupWithNavController(bottomNav, navController);
@@ -79,33 +64,17 @@ public class MainActivity extends AppCompatActivity implements ConnectivityRecei
             findViewById(R.id.bottom_nav).setVisibility(View.VISIBLE);
             findViewById(R.id.layout_disconnect).setVisibility(View.GONE);
 
-            //Toast.makeText(this,"connection", Toast.LENGTH_LONG).show();
         } else {
             findViewById(R.id.nav_host_fragment_main).setVisibility(View.GONE);
             findViewById(R.id.bottom_nav).setVisibility(View.GONE);
             findViewById(R.id.layout_disconnect).setVisibility(View.VISIBLE);
 
-            //Toast.makeText(this,"disconnection", Toast.LENGTH_LONG).show();
         }
-    }
-
-    private void initFireBase() {
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        //reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
-        reference = FirebaseDatabase.getInstance().getReference("Status").child(firebaseUser.getUid());
-
     }
 
     @Override
     public boolean onSupportNavigateUp() {
         return NavigationUI.navigateUp(navController, (DrawerLayout) null);
-    }
-
-    private void setOnOff(String onOff){
-        HashMap<String,Object> hashMap = new HashMap<>();
-        hashMap.put("online",onOff);
-
-        reference.updateChildren(hashMap);
     }
 
     private void setStatus(Boolean isOnline) {
@@ -117,7 +86,6 @@ public class MainActivity extends AppCompatActivity implements ConnectivityRecei
     @Override
     protected void onResume() {
         super.onResume();
-//        setOnOff("online");
         setStatus(true);
 
         receiver = new ConnectivityReceiver();
@@ -130,7 +98,6 @@ public class MainActivity extends AppCompatActivity implements ConnectivityRecei
     @Override
     protected void onPause() {
         super.onPause();
-//        setOnOff("offline");
         setStatus(false);
 
         unregisterReceiver(receiver);

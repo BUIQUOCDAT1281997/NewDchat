@@ -167,19 +167,22 @@ public class SignUpFragment extends Fragment {
                 .on("registraioncompleted", new Emitter.Listener() {
                     @Override
                     public void call(final Object... args) {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                String id = String.valueOf((int) args[0]);
-                                editor.putString(Strings.STATUS, "true");
-                                editor.putString(Strings.USER_ID, id);
-                                editor.apply();
-                                loadingDialog.dismissDialog();
-                                startActivity(new Intent(getContext(), MainActivity.class));
+                        if (getActivity()!=null) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    String id = String.valueOf((int) args[0]);
+                                    editor = sharedPreferences.edit();
+                                    editor.putString(Strings.STATUS, "true");
+                                    editor.putString(Strings.USER_ID, id);
+                                    editor.apply();
+                                    loadingDialog.dismissDialog();
+                                    startActivity(new Intent(getContext(), MainActivity.class));
 
-                                getActivity().finish();
-                            }
-                        });
+                                    getActivity().finish();
+                                }
+                            });
+                        }
                     }
                 })
                 .on("emailexists", new Emitter.Listener() {
@@ -207,10 +210,4 @@ public class SignUpFragment extends Fragment {
             }
         });
     }
-
-    /**
-     * 1. Kiem tra phan text dua vao kix hown nua
-     * 2. Them acion cho phan nho mk
-     */
-
 }

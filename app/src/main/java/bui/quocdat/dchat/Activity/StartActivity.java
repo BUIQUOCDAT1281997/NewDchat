@@ -30,12 +30,6 @@ public class StartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
-//        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-//        if (firebaseUser!=null){
-//            startActivity(new Intent(StartActivity.this, MainActivity.class));
-//            finish();
-//        }
-
         //socket
         SocketManager.getInstance().connectSocket();
         init();
@@ -49,11 +43,6 @@ public class StartActivity extends AppCompatActivity {
     private void init() {
         sharedPreferences = getSharedPreferences(Strings.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
 
-    }
-
-    public void toMainActivity(){
-        startActivity(new Intent(this,MainActivity.class));
-        finish();
     }
 
     //hind keyboard

@@ -21,12 +21,11 @@ import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.Socket;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Objects;
 
 import bui.quocdat.dchat.Activity.ProfileActivity;
 import bui.quocdat.dchat.Activity.StartActivity;
@@ -43,12 +42,6 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
     private TextView tvUserName;
     private ImageView imgUser;
 
-    //Firebase
-    private FirebaseUser firebaseUser;
-    private DatabaseReference reference;
-
-    // my server
-    private Socket socket;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
 
@@ -59,65 +52,39 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
 
         View rootView = inflater.inflate(R.layout.fragment_setting_new, container, false);
 
-        sharedPreferences = getActivity().getSharedPreferences(Strings.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        sharedPreferences = Objects.requireNonNull(getActivity()).getSharedPreferences(Strings.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         String id = sharedPreferences.getString(Strings.USER_ID, "");
 
         tvUserName = rootView.findViewById(R.id.tv_user_name);
         imgUser = rootView.findViewById(R.id.image_view_user);
 
-        socket = SocketManager.getInstance().getSocket();
-
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
+        // my server
+        Socket socket = SocketManager.getInstance().getSocket();
 
         socket.emit("getInfOfUser", id).on("resultInfOfUser", new Emitter.Listener() {
             @Override
             public void call(final Object... args) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        JSONObject infUser = (JSONObject) args[0];
-                        try {
-                            String url = infUser.getString("url");
-                            if (!url.isEmpty()) {
-                                Glide.with(getActivity())
-                                        .load(url)
-                                        .into(imgUser);
+                if (getActivity()!=null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            JSONObject infUser = (JSONObject) args[0];
+                            try {
+                                String url = infUser.getString("url");
+                                if (!url.isEmpty()) {
+                                    Glide.with(getActivity())
+                                            .load(url)
+                                            .into(imgUser);
+                                }
+                                tvUserName.setText(infUser.getString("last_name"));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                            tvUserName.setText(infUser.getString("last_name"));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
                         }
-                    }
-                });
+                    });
+                }
             }
         });
-
-//        reference.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                User user = dataSnapshot.getValue(User.class);
-//                tvUserName.setText(user.getUserName());
-//
-//                if (!user.getAvatarURL().equals("default")) {
-//
-//                    try {
-//                        Glide.with(getContext())
-//                                .load(user.getAvatarURL())
-//                                .into(imgUser);
-//                    }catch (NullPointerException ignored){
-//                        Log.e("Error", ignored.getMessage());
-//                    }
-//
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
-
 
         return rootView;
     }
@@ -135,7 +102,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.constrain_layout_account:
                 Intent intent = new Intent(getContext(), ProfileActivity.class);
-                getActivity().startActivity(intent);
+                Objects.requireNonNull(getActivity()).startActivity(intent);
                 break;
             case R.id.setting_tv_log_out:
                 showDialog();
@@ -168,7 +135,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
                 editor.putString(Strings.USER_ID, "");
                 editor.apply();
                 startActivity(new Intent(getActivity(), StartActivity.class));
-                getActivity().finish();
+                Objects.requireNonNull(getActivity()).finish();
             }
         });
         builder.show();

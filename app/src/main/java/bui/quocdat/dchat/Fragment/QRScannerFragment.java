@@ -158,36 +158,6 @@ public class QRScannerFragment extends Fragment {
     }
 
     private void accuracy() {
-//        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users");
-//        databaseReference.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-//                    User user = snapshot.getValue(User.class);
-//                    if (user.getId().equals(resultScanner)) {
-//                        isUserID = true;
-//                        break;
-//                    }
-//                }
-//
-//                if (isUserID) {
-//                    Intent intent = new Intent(getContext(), ChatActivity.class);
-//                    intent.putExtra("userID", resultScanner);
-//                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                    startActivity(intent);
-//                    getActivity().finish();
-//                    dialog.dismiss();
-//                }
-//                dialog.dismiss();
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//
-//        });
         if (resultScanner.matches("[0-9]+"))
             socket.emit("getInfOfUser", resultScanner).on("resultInfOfUser", new Emitter.Listener() {
                 @Override

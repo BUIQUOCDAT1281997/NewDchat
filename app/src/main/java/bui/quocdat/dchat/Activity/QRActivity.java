@@ -50,7 +50,7 @@ public class QRActivity extends AppCompatActivity {
 
     }
 
-    class ViewPagerAdapter extends FragmentPagerAdapter{
+    static class ViewPagerAdapter extends FragmentPagerAdapter{
 
         List<Fragment> fragmentList ;
         List<String> stringList;

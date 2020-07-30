@@ -19,11 +19,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.Socket;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import bui.quocdat.dchat.Adapter.UserAdapter;
-import bui.quocdat.dchat.Notification.Token;
 import bui.quocdat.dchat.Other.Strings;
 import bui.quocdat.dchat.Other.User;
 import bui.quocdat.dchat.R;
@@ -55,9 +49,6 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
 
     private LinearLayout linearLayoutLoaderView;
 
-    //Firebase
-    private FirebaseUser firebaseUser;
-    private DatabaseReference reference;
 
     //my server
     private Socket socket;
@@ -80,93 +71,45 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
         layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
 
-        // app data to ListFirends
-//        reference.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                listID.clear();
-//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-//                    ChatList chatList = snapshot.getValue(ChatList.class);
-//                    listID.add(chatList);
-//                }
-//
-//                addUserToList();
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
-
-        updateToken(FirebaseInstanceId.getInstance().getToken());
-
         socket.emit("getAllUser", id).on("resultAllUser", new Emitter.Listener() {
             @Override
             public void call(final Object... args) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        JSONArray data = (JSONArray) args[0];
-                        try {
-                            listUser = new ArrayList<>();
-                            User user;
-                            for (int i = 0; i < data.length(); i++) {
-                                JSONObject current = data.getJSONObject(i);
-                                user = new User(Integer.parseInt(current.getString("id")),
-                                        current.getString("phone"),
-                                        current.getString("email"),
-                                        current.getString("password"),
-                                        current.getString("full_name"),
-                                        current.getString("preferences"),
-                                        current.getString("created_at"),
-                                        current.getBoolean("status"),
-                                        current.getString("url"));
-                                listUser.add(user);
+                if (getActivity()!=null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            JSONArray data = (JSONArray) args[0];
+                            try {
+                                listUser = new ArrayList<>();
+                                User user;
+                                for (int i = 0; i < data.length(); i++) {
+                                    JSONObject current = data.getJSONObject(i);
+                                    user = new User(Integer.parseInt(current.getString("id")),
+                                            current.getString("phone"),
+                                            current.getString("email"),
+                                            current.getString("password"),
+                                            current.getString("full_name"),
+                                            current.getString("preferences"),
+                                            current.getString("created_at"),
+                                            current.getBoolean("status"),
+                                            current.getString("url"));
+                                    listUser.add(user);
+                                }
+                                recyclerView.setVisibility(View.VISIBLE);
+                                linearLayoutLoaderView.setVisibility(View.GONE);
+                                mAdapter = new UserAdapter(listUser, getContext(), false);
+                                recyclerView.setAdapter(mAdapter);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                            recyclerView.setVisibility(View.VISIBLE);
-                            linearLayoutLoaderView.setVisibility(View.GONE);
-                            mAdapter = new UserAdapter(listUser, getContext(), false);
-                            recyclerView.setAdapter(mAdapter);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
                         }
-                    }
-                });
+                    });
+                }
             }
         });
 
         return rootView;
     }
-
-
-//    private void addUserToList() {
-//        DatabaseReference drf = FirebaseDatabase.getInstance().getReference("Users");
-//        drf.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                listUser.clear();
-//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-//                    User user = snapshot.getValue(User.class);
-//                    for (ChatList chatList : listID) {
-//                        if (chatList.getId().equals(user.getId())) {
-//                            listUser.add(user);
-//                            break;
-//                        }
-//                    }
-//                }
-//                recyclerView.setVisibility(View.VISIBLE);
-//                linearLayoutLoaderView.setVisibility(View.GONE);
-//                mAdapter = new UserAdapter(listUser, getContext(), true);
-//                recyclerView.setAdapter(mAdapter);
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
-//    }
 
 
     private void initView() {
@@ -175,17 +118,6 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
         linearLayoutLoaderView = rootView.findViewById(R.id.linearLayout_search);
         //list user
         listUser = new ArrayList<>();
-//        listID = new ArrayList<>();
-
-        //FireBase
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        reference = FirebaseDatabase.getInstance().getReference("ChatList").child(firebaseUser.getUid());
-    }
-
-    private void updateToken(String strToken){
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Tokens");
-        Token token = new Token(strToken);
-        reference.child(firebaseUser.getUid()).setValue(token);
 
     }
 
