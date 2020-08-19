@@ -30,7 +30,34 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginBottom="10dp"
-            android:hint="@string/user_name"
+            android:hint="First name"
+            android:inputType="textPersonName" />
+        <EditText
+            android:id="@+id/sign_up_last_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:background="@drawable/rounded_border_edittext"
+            android:padding="10dp"
+            android:maxLength="15"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="10dp"
+            android:hint="Last Name"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/sign_up_phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:background="@drawable/rounded_border_edittext"
+            android:padding="10dp"
+            android:maxLength="15"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="10dp"
+            android:hint="Number Phone"
             android:inputType="textPersonName" />
 
         <EditText
@@ -57,6 +84,19 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:hint="@string/password"
+            android:inputType="textPassword" />
+
+        <EditText
+            android:id="@+id/sign_up_again"
+            android:background="@drawable/rounded_border_edittext"
+            android:padding="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Again"
             android:inputType="textPassword" />
 
         <Button

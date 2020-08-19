@@ -4,6 +4,10 @@ package bui.quocdat.dchat.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,25 +16,11 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
-
-import bui.quocdat.dchat.Adapter.PostAdapter;
-import bui.quocdat.dchat.Other.Post;
-import bui.quocdat.dchat.Other.Strings;
-import bui.quocdat.dchat.R;
-
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.Socket;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,6 +30,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import bui.quocdat.dchat.Adapter.PostAdapter;
+import bui.quocdat.dchat.Other.Post;
+import bui.quocdat.dchat.Other.Strings;
+import bui.quocdat.dchat.R;
 import bui.quocdat.dchat.Socketconnetion.SocketManager;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -59,6 +53,8 @@ public class NewsFragment extends Fragment {
 
     private LinearLayout linearLayoutLoaderView;
 
+    private SwipeRefreshLayout swipeRefreshLayout;
+
     // my server
     private Socket socket;
     private String id;
@@ -76,60 +72,61 @@ public class NewsFragment extends Fragment {
 
         //my server
         reloadPosts();
+        swipeRefreshLayout.setOnRefreshListener(this::reloadPosts);
 
         return rootView;
     }
 
     public void reloadPosts() {
+        swipeRefreshLayout.setRefreshing(true);
         listPost = new ArrayList<>();
-        socket.emit("infAndListPosts", id).on("resultInfAndListPost", new Emitter.Listener() {
-            @Override
-            public void call(final Object... args) {
-                if (getActivity()!=null) {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            JSONObject infUser = (JSONObject) args[0];
-                            try {
-                                String url = infUser.getString("url");
-                                if (!url.isEmpty()) {
-                                    Glide.with(getActivity())
-                                            .load(url)
-                                            .into(imageCurrentUser);
-                                }
-                                //TODO
-                            } catch (JSONException e) {
-                                e.printStackTrace();
+        socket.emit("infAndListPosts", id).on("resultInfAndListPost", args -> {
+            if (getActivity()!=null) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                        JSONObject infUser = (JSONObject) args[0];
+                        try {
+                            String url = infUser.getString("url");
+                            if (!url.isEmpty()) {
+                                Glide.with(getActivity())
+                                        .load(url)
+                                        .into(imageCurrentUser);
                             }
-                            JSONArray listData = (JSONArray) args[1];
-                            try {
-                                Post post;
-                                JSONObject current;
-                                for (int i = 0; i < listData.length(); i++) {
-                                    current = listData.getJSONObject(i);
-                                    post = new Post(Integer.parseInt(current.getString("id"))
-                                            , Integer.parseInt(current.getString("user_id"))
-                                            , current.getString("caption")
-                                            , Integer.parseInt(current.getString("media_id"))
-                                            , Integer.parseInt(current.getString("sum_like"))
-                                            , Integer.parseInt(current.getString("sum_comments"))
-                                            , current.getString("created_at")
-                                            , current.getString("urlUser")
-                                            , current.getString("urlPost")
-                                            , current.getString("full_name"));
-                                    listPost.add(post);
-                                }
-                                Collections.reverse(listPost);
-                                recyclerView.setVisibility(View.VISIBLE);
-                                linearLayoutLoaderView.setVisibility(View.GONE);
-                                postAdapter = new PostAdapter(listPost, getContext(), NewsFragment.this);
-                                recyclerView.setAdapter(postAdapter);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
+                            //TODO
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                    });
-                }
+                        JSONArray listData = (JSONArray) args[1];
+                        try {
+                            Post post;
+                            JSONObject current;
+                            listPost.clear();
+                            for (int i = 0; i < listData.length(); i++) {
+                                current = listData.getJSONObject(i);
+                                post = new Post(Integer.parseInt(current.getString("id"))
+                                        , Integer.parseInt(current.getString("user_id"))
+                                        , current.getString("caption")
+                                        , Integer.parseInt(current.getString("media_id"))
+                                        , Integer.parseInt(current.getString("sum_like"))
+                                        , Integer.parseInt(current.getString("sum_comments"))
+                                        , current.getString("created_at")
+                                        , current.getString("urlUser")
+                                        , current.getString("urlPost")
+                                        , current.getString("full_name"));
+                                listPost.add(post);
+                            }
+                            Collections.reverse(listPost);
+//                            recyclerView.setVisibility(View.VISIBLE);
+//                            linearLayoutLoaderView.setVisibility(View.GONE);
+                            postAdapter = new PostAdapter(listPost, getContext(), NewsFragment.this);
+                            recyclerView.setAdapter(postAdapter);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
             }
         });
     }
@@ -143,6 +140,7 @@ public class NewsFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
 
         socket = SocketManager.getInstance().getSocket();
     }

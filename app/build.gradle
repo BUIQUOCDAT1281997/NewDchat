@@ -10,7 +10,13 @@ android {
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
     buildTypes {
         release {
@@ -68,11 +74,18 @@ dependencies {
 
     //chip bottom navigation bar
 
-    implementation 'com.google.android.material:material:1.2.0-alpha04'
+    implementation 'com.google.android.material:material:1.3.0-alpha02'
 
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.19'
 
     //socket
     implementation 'com.github.nkzawa:socket.io-client:0.6.0'
+
+    implementation 'com.intuit.sdp:sdp-android:1.0.6'
+    implementation 'com.intuit.ssp:ssp-android:1.0.6'
+
+    implementation 'com.android.support:multidex:1.0.3'
+
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 
 }

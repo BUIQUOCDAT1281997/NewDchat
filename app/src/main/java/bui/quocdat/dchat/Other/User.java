@@ -14,6 +14,7 @@ public class User {
     private String created_at;
     private Boolean status;
     private String url;
+    private Message lastMess;
 
     public User(int id, String phone, String email, String password, String fullName, String preferences, String created_at, Boolean status, String url) {
         this.id = id;
@@ -25,6 +26,19 @@ public class User {
         this.created_at = created_at;
         this.status = status;
         this.url = url;
+    }
+
+    public User(int id, String phone, String email, String password, String fullName, String preferences, String created_at, Boolean status, String url, Message lastMess) {
+        this.id = id;
+        this.phone = phone;
+        this.email = email;
+        this.password = password;
+        this.fullName = fullName;
+        this.preferences = preferences;
+        this.created_at = created_at;
+        this.status = status;
+        this.url = url;
+        this.lastMess = lastMess;
     }
 
     public int getId() {
@@ -129,5 +143,13 @@ public class User {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public Message getLastMess() {
+        return lastMess;
+    }
+
+    public void setLastMess(Message lastMess) {
+        this.lastMess = lastMess;
     }
 }

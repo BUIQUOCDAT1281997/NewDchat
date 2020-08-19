@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -23,13 +24,13 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
     private List<User> mDataAllUser;
     private Context mContext;
-//    private boolean isFriends;
 
     // ViewHolder
     static class UserViewHolder extends RecyclerView.ViewHolder {
 
         CircleImageView imgUser;
         TextView tvUserName, tvStatus;
+        ImageView ivDot;
 
         UserViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -37,13 +38,13 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
             this.imgUser = itemView.findViewById(R.id.item_avatar_user);
             this.tvUserName = itemView.findViewById(R.id.item_user_name);
             this.tvStatus = itemView.findViewById(R.id.item_status);
+            this.ivDot =  itemView.findViewById(R.id.item_user_dot);
         }
     }
 
-    public UserAdapter(List<User> mDataAllUser, Context mContext, boolean isFriends) {
+    public UserAdapter(List<User> mDataAllUser, Context mContext) {
         this.mDataAllUser = mDataAllUser;
         this.mContext = mContext;
-//        this.isFriends = isFriends;
     }
 
     @NonNull
@@ -75,14 +76,18 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         //textView
         holder.tvUserName.setText(user.getFullName());
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(mContext, ChatActivity.class);
-                intent.putExtra("userID", user.getId());
-                mContext.startActivity(intent);
-            }
+        holder.itemView.setOnClickListener(view -> {
+            Intent intent = new Intent(mContext, ChatActivity.class);
+            intent.putExtra("userID", user.getId());
+            mContext.startActivity(intent);
         });
+
+        if (!user.getLastMess().getText().isEmpty()) {
+            holder.tvStatus.setText(user.getLastMess().getText());
+            if (!user.getLastMess().isSeen()) {
+                holder.ivDot.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     @Override

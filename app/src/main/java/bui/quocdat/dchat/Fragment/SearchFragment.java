@@ -118,7 +118,7 @@ public class SearchFragment extends Fragment {
                             Collections.shuffle(listUser);
                             recyclerView.setVisibility(View.VISIBLE);
                             linearLayoutLoaderView.setVisibility(View.GONE);
-                            mAdapter = new UserAdapter(listUser, getContext(), false);
+                            mAdapter = new UserAdapter(listUser, getContext());
                             recyclerView.setAdapter(mAdapter);
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -157,7 +157,7 @@ public class SearchFragment extends Fragment {
                                         current.getString("url"));
                                 listUser.add(user);
                             }
-                            mAdapter = new UserAdapter(listUser, getContext(), false);
+                            mAdapter = new UserAdapter(listUser, getContext());
                             recyclerView.setAdapter(mAdapter);
                         } catch (JSONException e) {
                             e.printStackTrace();

@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Objects;
 
 import bui.quocdat.dchat.Activity.ChatActivity;
+import bui.quocdat.dchat.Activity.CommentActivity;
 import bui.quocdat.dchat.Fragment.NewsFragment;
 import bui.quocdat.dchat.Other.MyBounceInterpolator;
 import bui.quocdat.dchat.Other.Post;
@@ -103,7 +104,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(mContext, ChatActivity.class);
-                    intent.putExtra("userID", post.getId());
+                    intent.putExtra("userID", post.getUser_id());
                     mContext.startActivity(intent);
                 }
             });
@@ -127,7 +128,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                                             holder.iconLike.setImageResource(R.drawable.ic_icon_like_red);
                                         } else holder.iconLike.setImageResource(R.drawable.ic_icon_like_white);
                                         didTapButton(holder.iconLike);
-
                                         holder.tvLikes.setText(String.valueOf(sum));
                                     }
                                 });
@@ -135,6 +135,15 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                         }
                     }
                 });
+            }
+        });
+
+        holder.iconComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(mContext, CommentActivity.class);
+                intent.putExtra("id_post", post.getId());
+                mContext.startActivity(intent);
             }
         });
     }

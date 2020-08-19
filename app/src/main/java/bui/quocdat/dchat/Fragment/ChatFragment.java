@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import bui.quocdat.dchat.Adapter.UserAdapter;
+import bui.quocdat.dchat.Other.Message;
 import bui.quocdat.dchat.Other.Strings;
 import bui.quocdat.dchat.Other.User;
 import bui.quocdat.dchat.R;
@@ -42,8 +43,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
 
     private RecyclerView recyclerView;
     private View rootView;
-    private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager layoutManager;
+    private UserAdapter mAdapter;
     private List<User> listUser;
     private NavController navController;
 
@@ -68,43 +68,46 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
         //init RecyclerView
         recyclerView = rootView.findViewById(R.id.recycler_view_friends);
         recyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(getContext());
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
 
-        socket.emit("getAllUser", id).on("resultAllUser", new Emitter.Listener() {
-            @Override
-            public void call(final Object... args) {
-                if (getActivity()!=null) {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            JSONArray data = (JSONArray) args[0];
-                            try {
-                                listUser = new ArrayList<>();
-                                User user;
-                                for (int i = 0; i < data.length(); i++) {
-                                    JSONObject current = data.getJSONObject(i);
-                                    user = new User(Integer.parseInt(current.getString("id")),
-                                            current.getString("phone"),
-                                            current.getString("email"),
-                                            current.getString("password"),
-                                            current.getString("full_name"),
-                                            current.getString("preferences"),
-                                            current.getString("created_at"),
-                                            current.getBoolean("status"),
-                                            current.getString("url"));
-                                    listUser.add(user);
-                                }
-                                recyclerView.setVisibility(View.VISIBLE);
-                                linearLayoutLoaderView.setVisibility(View.GONE);
-                                mAdapter = new UserAdapter(listUser, getContext(), false);
-                                recyclerView.setAdapter(mAdapter);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
+        socket.emit("getAllUser", id).on("resultAllUser", args -> {
+            if (getActivity()!=null) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        JSONArray data = (JSONArray) args[0];
+                        try {
+                            listUser = new ArrayList<>();
+                            User user;
+                            for (int i = 0; i < data.length(); i++) {
+                                JSONObject current = data.getJSONObject(i);
+                                Message message = new Message(current.getInt("sender_id"),
+                                        current.getInt("receiver_id"),
+                                        current.getString("text"),
+                                        current.getString("type"),
+                                        current.getBoolean("is_seen"));
+                                user = new User(Integer.parseInt(current.getString("id")),
+                                        current.getString("phone"),
+                                        current.getString("email"),
+                                        current.getString("password"),
+                                        current.getString("full_name"),
+                                        current.getString("preferences"),
+                                        current.getString("created_at"),
+                                        current.getBoolean("status"),
+                                        current.getString("url"),
+                                        message);
+                                listUser.add(user);
                             }
+                            recyclerView.setVisibility(View.VISIBLE);
+                            linearLayoutLoaderView.setVisibility(View.GONE);
+                            mAdapter = new UserAdapter(listUser, getContext());
+                            recyclerView.setAdapter(mAdapter);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                    });
-                }
+                    }
+                });
             }
         });
 
