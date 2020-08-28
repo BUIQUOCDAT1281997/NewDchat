@@ -1,42 +1,34 @@
 {
   "project_info": {
-    "project_number": "1006424724168",
-    "firebase_url": "https://dchatapplication.firebaseio.com",
-    "project_id": "dchatapplication",
-    "storage_bucket": "dchatapplication.appspot.com"
+    "project_number": "441006080071",
+    "firebase_url": "https://pg-talk.firebaseio.com",
+    "project_id": "pg-talk",
+    "storage_bucket": "pg-talk.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1006424724168:android:2999bf5a76cf4f8ba54bfd",
+        "mobilesdk_app_id": "1:441006080071:android:ce7135aa83221438dff162",
         "android_client_info": {
           "package_name": "bui.quocdat.dchat"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1006424724168-e0lg4jq9vufvrth6cbfet474o0mn9j7a.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "bui.quocdat.dchat",
-            "certificate_hash": "0f8783ac08ddd15157abae700e17af00f755daa9"
-          }
-        },
-        {
-          "client_id": "1006424724168-hba9ekqulhired0ph0d6n8bu213f3k7m.apps.googleusercontent.com",
+          "client_id": "441006080071-mr77jsm5otplmqbsvqp59nqa0rf45hd9.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyApIe32m1phapRsA1ma0Ie2azbevJcBhfA"
+          "current_key": "AIzaSyBjhLXculexB_T1qWOpJr7GPoafhv-_lDw"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1006424724168-hba9ekqulhired0ph0d6n8bu213f3k7m.apps.googleusercontent.com",
+              "client_id": "441006080071-mr77jsm5otplmqbsvqp59nqa0rf45hd9.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
@@ -45,51 +37,27 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1006424724168:android:328739dbc48765e1a54bfd",
+        "mobilesdk_app_id": "1:441006080071:android:c757c40b8fdafd8fdff162",
         "android_client_info": {
-          "package_name": "com.example.dchatapplication"
+          "package_name": "quocdat.kurs.pgtalk"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1006424724168-l60g6i2epdamic105p7obikfik11vr8u.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.dchatapplication",
-            "certificate_hash": "0f8783ac08ddd15157abae700e17af00f755daa9"
-          }
-        },
-        {
-          "client_id": "1006424724168-l2pq0tap0fbocdv5u84nb71v21tfgs9v.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.dchatapplication",
-            "certificate_hash": "95c81f945899cab1ff47ecfb86360a36b578b5c3"
-          }
-        },
-        {
-          "client_id": "1006424724168-4cdmtrf5lpt6b1abpbrcs88gt3k0ecfb.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.dchatapplication",
-            "certificate_hash": "dbba44e5ee981b5a6b470b55620e60eb4be2d1eb"
-          }
-        },
-        {
-          "client_id": "1006424724168-hba9ekqulhired0ph0d6n8bu213f3k7m.apps.googleusercontent.com",
+          "client_id": "441006080071-mr77jsm5otplmqbsvqp59nqa0rf45hd9.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyApIe32m1phapRsA1ma0Ie2azbevJcBhfA"
+          "current_key": "AIzaSyBjhLXculexB_T1qWOpJr7GPoafhv-_lDw"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1006424724168-hba9ekqulhired0ph0d6n8bu213f3k7m.apps.googleusercontent.com",
+              "client_id": "441006080071-mr77jsm5otplmqbsvqp59nqa0rf45hd9.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

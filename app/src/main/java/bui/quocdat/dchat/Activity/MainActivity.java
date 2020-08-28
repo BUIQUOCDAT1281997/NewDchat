@@ -1,8 +1,6 @@
 package bui.quocdat.dchat.Activity;
 
-import android.content.Context;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 
@@ -17,6 +15,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import bui.quocdat.dchat.ConnectivityReceiver;
 import bui.quocdat.dchat.Other.MyApplication;
+import bui.quocdat.dchat.Other.PreferenceManager;
 import bui.quocdat.dchat.Other.Strings;
 import bui.quocdat.dchat.R;
 import bui.quocdat.dchat.Socketconnetion.SocketManager;
@@ -38,8 +37,7 @@ public class MainActivity extends AppCompatActivity implements ConnectivityRecei
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        SharedPreferences sharedPreferences = getSharedPreferences(Strings.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-        id = sharedPreferences.getString(Strings.USER_ID, "");
+        id = new PreferenceManager(this).getString(Strings.USER_ID);
 
         checkConnection();
 

@@ -29,6 +29,7 @@ import java.util.List;
 
 import bui.quocdat.dchat.Adapter.UserAdapter;
 import bui.quocdat.dchat.Other.Message;
+import bui.quocdat.dchat.Other.PreferenceManager;
 import bui.quocdat.dchat.Other.Strings;
 import bui.quocdat.dchat.Other.User;
 import bui.quocdat.dchat.R;
@@ -59,8 +60,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                              final Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_friends, container, false);
 
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Strings.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-        String id = sharedPreferences.getString(Strings.USER_ID, "");
+        String id = new PreferenceManager(getContext()).getString(Strings.USER_ID);
 
         //init view
         initView();

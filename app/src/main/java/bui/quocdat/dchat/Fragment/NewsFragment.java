@@ -32,6 +32,7 @@ import java.util.List;
 
 import bui.quocdat.dchat.Adapter.PostAdapter;
 import bui.quocdat.dchat.Other.Post;
+import bui.quocdat.dchat.Other.PreferenceManager;
 import bui.quocdat.dchat.Other.Strings;
 import bui.quocdat.dchat.R;
 import bui.quocdat.dchat.Socketconnetion.SocketManager;
@@ -65,8 +66,7 @@ public class NewsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_news_new, container, false);
 
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Strings.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-        id = sharedPreferences.getString(Strings.USER_ID, "");
+        id = new PreferenceManager(getContext()).getString(Strings.USER_ID);
 
         initViewAndFireBase(rootView);
 

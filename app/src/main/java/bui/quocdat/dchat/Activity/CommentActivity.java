@@ -1,15 +1,14 @@
 package bui.quocdat.dchat.Activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Context;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.Socket;
@@ -96,45 +95,34 @@ public class CommentActivity extends AppCompatActivity {
             }
         });
 
-        ivSend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String text = etContent.getText().toString();
-                if (!text.isEmpty()) {
-                    socket.emit("newComment", id_post, id, text);
-                    etContent.setText("");
-                }
+        ivSend.setOnClickListener(view -> {
+            String text = etContent.getText().toString();
+            if (!text.isEmpty()) {
+                socket.emit("newComment", id_post, id, text);
+                etContent.setText("");
             }
         });
 
-        socket.on("result_newComment", new Emitter.Listener() {
-            @Override
-            public void call(final Object... args) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        JSONObject object = (JSONObject) args[0];
-                        try {
-                            Comment comment = new Comment(
-                                    object.getInt("id"),
-                                    object.getInt("post_id"),
-                                    object.getInt("user_id"),
-                                    object.getString("text"),
-                                    object.getString("url"),
-                                    object.getString("created_at"),
-                                    object.getString("urlUser"),
-                                    object.getString("userName")
-                            );
-                            commentList.add(comment);
-                            commentAdapter = new CommentAdapter(commentList, getApplicationContext());
-                            recyclerView.setAdapter(commentAdapter);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
+        socket.on("result_newComment", args -> runOnUiThread(() -> {
+            JSONObject object = (JSONObject) args[0];
+            try {
+                Comment comment = new Comment(
+                        object.getInt("id"),
+                        object.getInt("post_id"),
+                        object.getInt("user_id"),
+                        object.getString("text"),
+                        object.getString("url"),
+                        object.getString("created_at"),
+                        object.getString("urlUser"),
+                        object.getString("userName")
+                );
+                commentList.add(comment);
+                commentAdapter = new CommentAdapter(commentList, getApplicationContext());
+                recyclerView.setAdapter(commentAdapter);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        });
+        }));
 
     }
 }

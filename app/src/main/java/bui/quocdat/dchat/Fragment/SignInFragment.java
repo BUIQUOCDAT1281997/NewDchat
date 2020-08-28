@@ -1,18 +1,10 @@
 package bui.quocdat.dchat.Fragment;
 
 
-import android.content.Context;
+import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -20,22 +12,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import bui.quocdat.dchat.Activity.MainActivity;
-import bui.quocdat.dchat.Other.LoadingDialog;
-import bui.quocdat.dchat.Other.Strings;
-import bui.quocdat.dchat.R;
-import bui.quocdat.dchat.Activity.StartActivity;
-import bui.quocdat.dchat.Socketconnetion.SocketManager;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
-import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.Socket;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.Objects;
+
+import bui.quocdat.dchat.Activity.MainActivity;
+import bui.quocdat.dchat.Activity.StartActivity;
+import bui.quocdat.dchat.Other.LoadingDialog;
+import bui.quocdat.dchat.Other.PreferenceManager;
+import bui.quocdat.dchat.Other.Strings;
+import bui.quocdat.dchat.R;
+import bui.quocdat.dchat.Socketconnetion.SocketManager;
 
 
 /**
@@ -44,20 +36,12 @@ import java.util.Objects;
 public class SignInFragment extends Fragment implements View.OnClickListener {
 
     private TextInputEditText textEmail, textPassword;
-    private NavController navController;
 
     private LoadingDialog loadingDialog;
 
     private Socket socket;
 
-    private SharedPreferences sharedPreferences;
-    private SharedPreferences.Editor editor;
-
-
-
-    //Firebase
-//    private FirebaseAuth auth;
-
+    private PreferenceManager preferenceManager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -76,20 +60,14 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
         view.findViewById(R.id.sign_in_button).setOnClickListener(this);
 
         //hide soft keyboard on android after clicking outside EditText
-        textEmail.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                if (!b){
-                    ((StartActivity)getActivity()).hideKeyboard(view);
-                }
+        textEmail.setOnFocusChangeListener((view12, b) -> {
+            if (!b && getActivity() != null) {
+                ((StartActivity) getActivity()).hideKeyboard(view12);
             }
         });
-        textPassword.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                if (!b){
-                    ((StartActivity)getActivity()).hideKeyboard(view);
-                }
+        textPassword.setOnFocusChangeListener((view1, b) -> {
+            if (!b && getActivity() != null) {
+                ((StartActivity) getActivity()).hideKeyboard(view1);
             }
         });
 
@@ -97,7 +75,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
 
     private void initView(View view) {
 
-        navController = Navigation.findNavController(view);
         loadingDialog = new LoadingDialog(getActivity());
         textEmail = view.findViewById(R.id.sign_in_email);
         textPassword = view.findViewById(R.id.sign_in_password);
@@ -106,11 +83,8 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
         socket = SocketManager.getInstance().getSocket();
 
         //my server
-        sharedPreferences = getActivity().getSharedPreferences(Strings.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        preferenceManager = new PreferenceManager(Objects.requireNonNull(getContext()));
 
-
-
-//        auth = FirebaseAuth.getInstance();
     }
 
     @Override
@@ -141,76 +115,41 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
 
         loadingDialog.startLoadingDialog();
 
-//        auth.signInWithEmailAndPassword(email, Password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-//            @Override
-//            public void onComplete(@NonNull Task<AuthResult> task) {
-//                if (task.isSuccessful()) {
-//                    ((StartActivity) getActivity()).toMainActivity();
-//                } else {
-//                    Toast
-//                            .makeText(getActivity(), getResources().getString(R.string.Authentication_failed), Toast.LENGTH_LONG)
-//                            .show();
-//                }
-//                loadingDialog.dismissDialog();
-//            }
-//        });
+        socket.emit("login", email, password).on("successful", args -> Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
+            String id = String.valueOf((int) args[0]);
+            @SuppressLint("HardwareIds")
+            String android_id = Settings.Secure.getString(getActivity().getContentResolver(), Settings.Secure.ANDROID_ID);
+            String android_name = getDeviceName();
+            if (!android_id.isEmpty() && !android_name.isEmpty()) {
+                socket.emit("insertdeviceinfor", id, android_id, android_name);
+            }
 
-        socket.emit("login", email, password).on("successful", new Emitter.Listener() {
-            @Override
-            public void call(final Object... args) {
-                Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        String id = String.valueOf((int) args[0]);
-                        String android_id = Settings.Secure.getString(getActivity().getContentResolver(), Settings.Secure.ANDROID_ID);
-                        String android_name = getDeviceName();
-                        if (!android_id.isEmpty()&&!android_name.isEmpty()) {
-                            socket.emit("insertdeviceinfor",id,android_id,android_name);
-                        }
+            preferenceManager.putBoolean(Strings.STATUS, true);
+            preferenceManager.putString(Strings.USER_ID, id);
+            startActivity(new Intent(getContext(), MainActivity.class));
+            loadingDialog.dismissDialog();
+            getActivity().finish();
 
-                        editor = sharedPreferences.edit();
-                        editor.putString(Strings.STATUS,"true");
-                        editor.putString(Strings.USER_ID, id);
-                        editor.apply();
-                        startActivity(new Intent(getContext(), MainActivity.class));
-                        loadingDialog.dismissDialog();
-                        getActivity().finish();
-
-                    }
+        })).on("wrongpassword", args -> {
+            if (getActivity() != null) {
+                getActivity().runOnUiThread(() -> {
+                    Toast.makeText(getContext(), "Wrong password !", Toast.LENGTH_LONG).show();
+                    loadingDialog.dismissDialog();
                 });
             }
-        }).on("wrongpassword", new Emitter.Listener() {
-            @Override
-            public void call(final Object... args) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getContext(), "Wrong password !", Toast.LENGTH_LONG).show();
-                        loadingDialog.dismissDialog();
-                    }
-                });
 
-            }
-        }).on("wrongemail", new Emitter.Listener() {
-            @Override
-            public void call(final Object... args) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getContext(), "This email has not been registered", Toast.LENGTH_LONG).show();
-                        loadingDialog.dismissDialog();
-                    }
+        }).on("wrongemail", args -> {
+            if (getActivity() != null) {
+                getActivity().runOnUiThread(() -> {
+                    Toast.makeText(getContext(), "This email has not been registered", Toast.LENGTH_LONG).show();
+                    loadingDialog.dismissDialog();
                 });
             }
-        }).on("somethingwrong", new Emitter.Listener() {
-            @Override
-            public void call(final Object... args) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getContext(), "Sorry ! The server is under maintenance :(", Toast.LENGTH_LONG).show();
-                        loadingDialog.dismissDialog();
-                    }
+        }).on("somethingwrong", args -> {
+            if (getActivity() != null) {
+                getActivity().runOnUiThread(() -> {
+                    Toast.makeText(getContext(), "Sorry ! The server is under maintenance :(", Toast.LENGTH_LONG).show();
+                    loadingDialog.dismissDialog();
                 });
             }
         });

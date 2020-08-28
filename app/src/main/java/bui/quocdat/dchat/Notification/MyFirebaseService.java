@@ -16,6 +16,8 @@ import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
 import bui.quocdat.dchat.Activity.ChatActivity;
+import bui.quocdat.dchat.Activity.IncomingInvitationActivity;
+import bui.quocdat.dchat.Other.Strings;
 import bui.quocdat.dchat.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -47,23 +49,33 @@ public class MyFirebaseService extends FirebaseMessagingService {
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
-        String sented = remoteMessage.getData().get("sented");
-        String user = remoteMessage.getData().get("user");
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        String type = remoteMessage.getData().get(Strings.REMOTE_MSG_TYPE);
 
-        SharedPreferences sharedPreferences = getSharedPreferences("Preferences_Shared", MODE_PRIVATE);
-
-        if (firebaseUser != null && sented.equals(firebaseUser.getUid())) {
-
-            assert user != null;
-            if (!user.equals(sharedPreferences.getString("currentUser", "default"))) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    sendOreoNotification(remoteMessage);
-                } else {
-                    sendNotification(remoteMessage);
-                }
+        if(type != null){
+            if (type.equals(Strings.REMOTE_MSG_INVITATION)){
+                Intent intent = new Intent(getApplicationContext(), IncomingInvitationActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
             }
         }
+
+//        String sented = remoteMessage.getData().get("sented");
+//        String user = remoteMessage.getData().get("user");
+//        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+//
+//        SharedPreferences sharedPreferences = getSharedPreferences("Preferences_Shared", MODE_PRIVATE);
+//
+//        if (firebaseUser != null && sented.equals(firebaseUser.getUid())) {
+//
+//            assert user != null;
+//            if (!user.equals(sharedPreferences.getString("currentUser", "default"))) {
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                    sendOreoNotification(remoteMessage);
+//                } else {
+//                    sendNotification(remoteMessage);
+//                }
+//            }
+//        }
     }
 
     @TargetApi(Build.VERSION_CODES.O)

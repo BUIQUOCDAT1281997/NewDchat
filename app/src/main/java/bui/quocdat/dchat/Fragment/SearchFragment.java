@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Objects;
 
 import bui.quocdat.dchat.Adapter.UserAdapter;
+import bui.quocdat.dchat.Other.PreferenceManager;
 import bui.quocdat.dchat.Other.StringUtils;
 import bui.quocdat.dchat.Other.Strings;
 import bui.quocdat.dchat.Other.User;
@@ -56,8 +57,7 @@ public class SearchFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_search, container, false);
 
-        SharedPreferences sharedPreferences = Objects.requireNonNull(getActivity()).getSharedPreferences(Strings.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-        String id = sharedPreferences.getString(Strings.USER_ID, "");
+        String id = new PreferenceManager(getContext()).getString(Strings.USER_ID);
 
         linearLayoutLoaderView = rootView.findViewById(R.id.linearLayout_search);
         socket = SocketManager.getInstance().getSocket();

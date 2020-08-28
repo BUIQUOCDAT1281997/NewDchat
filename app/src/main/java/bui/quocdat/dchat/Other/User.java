@@ -1,6 +1,8 @@
 package bui.quocdat.dchat.Other;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
     private int id;
     private String phone;
     private String email;
@@ -15,6 +17,7 @@ public class User {
     private Boolean status;
     private String url;
     private Message lastMess;
+    private String token;
 
     public User(int id, String phone, String email, String password, String fullName, String preferences, String created_at, Boolean status, String url) {
         this.id = id;
@@ -39,6 +42,20 @@ public class User {
         this.status = status;
         this.url = url;
         this.lastMess = lastMess;
+    }
+
+    public User(int id, String phone, String email, String password, String fullName, String preferences, String created_at, Boolean status, String url, Message lastMess, String token) {
+        this.id = id;
+        this.phone = phone;
+        this.email = email;
+        this.password = password;
+        this.fullName = fullName;
+        this.preferences = preferences;
+        this.created_at = created_at;
+        this.status = status;
+        this.url = url;
+        this.lastMess = lastMess;
+        this.token = token;
     }
 
     public int getId() {
@@ -151,5 +168,13 @@ public class User {
 
     public void setLastMess(Message lastMess) {
         this.lastMess = lastMess;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }

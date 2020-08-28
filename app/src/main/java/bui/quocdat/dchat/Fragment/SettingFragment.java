@@ -29,6 +29,7 @@ import java.util.Objects;
 
 import bui.quocdat.dchat.Activity.ProfileActivity;
 import bui.quocdat.dchat.Activity.StartActivity;
+import bui.quocdat.dchat.Other.PreferenceManager;
 import bui.quocdat.dchat.Other.Strings;
 import bui.quocdat.dchat.R;
 import bui.quocdat.dchat.Socketconnetion.SocketManager;
@@ -42,8 +43,8 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
     private TextView tvUserName;
     private ImageView imgUser;
 
-    private SharedPreferences sharedPreferences;
-    private SharedPreferences.Editor editor;
+
+    private PreferenceManager preferenceManager;
 
 
     @Override
@@ -52,8 +53,8 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
 
         View rootView = inflater.inflate(R.layout.fragment_setting_new, container, false);
 
-        sharedPreferences = Objects.requireNonNull(getActivity()).getSharedPreferences(Strings.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-        String id = sharedPreferences.getString(Strings.USER_ID, "");
+        preferenceManager = new PreferenceManager(getContext());
+        String id = preferenceManager.getString(Strings.USER_ID);
 
         tvUserName = rootView.findViewById(R.id.tv_user_name);
         imgUser = rootView.findViewById(R.id.image_view_user);
@@ -61,28 +62,22 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
         // my server
         Socket socket = SocketManager.getInstance().getSocket();
 
-        socket.emit("getInfOfUser", id).on("resultInfOfUser", new Emitter.Listener() {
-            @Override
-            public void call(final Object... args) {
-                if (getActivity()!=null) {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            JSONObject infUser = (JSONObject) args[0];
-                            try {
-                                String url = infUser.getString("url");
-                                if (!url.isEmpty()) {
-                                    Glide.with(getActivity())
-                                            .load(url)
-                                            .into(imgUser);
-                                }
-                                tvUserName.setText(infUser.getString("last_name"));
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
+        socket.emit("getInfOfUser", id).on("resultInfOfUser", args -> {
+            if (getActivity()!=null) {
+                getActivity().runOnUiThread(() -> {
+                    JSONObject infUser = (JSONObject) args[0];
+                    try {
+                        String url = infUser.getString("url");
+                        if (!url.isEmpty()) {
+                            Glide.with(getActivity())
+                                    .load(url)
+                                    .into(imgUser);
                         }
-                    });
-                }
+                        tvUserName.setText(infUser.getString("last_name"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                });
             }
         });
 
@@ -120,23 +115,14 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
         builder.setMessage(getResources().getString(R.string.you_want_to_log_out));
         builder.setCancelable(false);
         builder.setBackground(getResources().getDrawable(R.drawable.alert_dialog_bg));
-        builder.setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+        builder.setPositiveButton("Cancel", (dialog, which) -> {
 
-            }
         });
-        builder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                FirebaseAuth.getInstance().signOut();
-                editor = sharedPreferences.edit();
-                editor.putString(Strings.STATUS, "false");
-                editor.putString(Strings.USER_ID, "");
-                editor.apply();
-                startActivity(new Intent(getActivity(), StartActivity.class));
-                Objects.requireNonNull(getActivity()).finish();
-            }
+        builder.setNegativeButton("OK", (dialog, which) -> {
+            FirebaseAuth.getInstance().signOut();
+            preferenceManager.clearPreferences();
+            startActivity(new Intent(getActivity(), StartActivity.class));
+            Objects.requireNonNull(getActivity()).finish();
         });
         builder.show();
     }

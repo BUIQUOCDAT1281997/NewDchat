@@ -20,6 +20,7 @@ import com.github.nkzawa.socketio.client.Socket;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import bui.quocdat.dchat.Other.PreferenceManager;
 import bui.quocdat.dchat.Other.Strings;
 import bui.quocdat.dchat.R;
 import bui.quocdat.dchat.Socketconnetion.SocketManager;
@@ -41,8 +42,7 @@ public class ProfileFriendActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_friend);
 
-        SharedPreferences sharedPreferences = getSharedPreferences(Strings.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-        id = sharedPreferences.getString(Strings.USER_ID, "");
+        id = new PreferenceManager(this).getString(Strings.USER_ID);
 
 
        /*

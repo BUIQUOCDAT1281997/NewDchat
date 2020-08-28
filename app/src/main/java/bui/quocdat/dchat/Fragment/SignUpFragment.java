@@ -1,8 +1,6 @@
 package bui.quocdat.dchat.Fragment;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,18 +12,17 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 
-import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.Socket;
 
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import bui.quocdat.dchat.Activity.MainActivity;
 import bui.quocdat.dchat.Activity.StartActivity;
 import bui.quocdat.dchat.Other.LoadingDialog;
+import bui.quocdat.dchat.Other.PreferenceManager;
 import bui.quocdat.dchat.Other.Strings;
 import bui.quocdat.dchat.R;
 import bui.quocdat.dchat.Socketconnetion.SocketManager;
@@ -35,13 +32,11 @@ public class SignUpFragment extends Fragment {
 
     private EditText userName, etEmail, password, lastName, phone, again;
     private Button btnRegister;
-    private NavController navController;
     private LoadingDialog loadingDialog;
 
     private Socket socket;
 
-    private SharedPreferences sharedPreferences;
-    private SharedPreferences.Editor editor;
+    private PreferenceManager preferenceManager;
 
 
     @Override
@@ -54,23 +49,19 @@ public class SignUpFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        navController = Navigation.findNavController(view);
         initEditText(view);
 
         // Button
-        btnRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        btnRegister.setOnClickListener(view1 -> {
 
-                String strUserName = userName.getText().toString();
-                String strEmail = etEmail.getText().toString();
-                String strPassword = password.getText().toString();
-                String strAgain = again.getText().toString();
-                String strLastName = lastName.getText().toString();
-                String strPhone = phone.getText().toString();
+            String strUserName = userName.getText().toString();
+            String strEmail = etEmail.getText().toString();
+            String strPassword = password.getText().toString();
+            String strAgain = again.getText().toString();
+            String strLastName = lastName.getText().toString();
+            String strPhone = phone.getText().toString();
 
-                    register(strUserName, strLastName,strEmail, strPhone, strPassword, strAgain);
-            }
+                register(strUserName, strLastName,strEmail, strPhone, strPassword, strAgain);
         });
 
         //hide soft keyboard on android after clicking outside EditText
@@ -90,9 +81,7 @@ public class SignUpFragment extends Fragment {
         btnRegister = view.findViewById(R.id.sign_up_button_create);
         socket = SocketManager.getInstance().getSocket();
         //my server
-        if (getActivity()!=null) {
-            sharedPreferences = getActivity().getSharedPreferences(Strings.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-        }
+        preferenceManager = new PreferenceManager(Objects.requireNonNull(getContext()));
     }
 
 
@@ -101,40 +90,29 @@ public class SignUpFragment extends Fragment {
         if (checkInfo(fName, lName, mEmail, mPhone, mPassword, mAgain)){
             loadingDialog.startLoadingDialog();
             socket.emit("registeruser", fName, lName, mEmail, mPhone, mPassword)
-                    .on("registraioncompleted", new Emitter.Listener() {
-                        @Override
-                        public void call(final Object... args) {
-                            if (getActivity()!=null) {
-                                getActivity().runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        String id = String.valueOf((int) args[0]);
-                                        editor = sharedPreferences.edit();
-                                        editor.putString(Strings.STATUS, "true");
-                                        editor.putString(Strings.USER_ID, id);
-                                        editor.apply();
-                                        loadingDialog.dismissDialog();
-                                        startActivity(new Intent(getContext(), MainActivity.class));
+                    .on("registraioncompleted", args -> {
+                        if (getActivity()!=null) {
+                            getActivity().runOnUiThread(() -> {
+                                String id = String.valueOf((int) args[0]);
+                                preferenceManager.putBoolean(Strings.STATUS, true);
+                                preferenceManager.putString(Strings.USER_ID, id);
+                                preferenceManager.putString(Strings.KEY_FIRST_NAME, fName);
+                                preferenceManager.putString(Strings.KEY_LAST_NAME, lName);
+                                preferenceManager.putString(Strings.KEY_EMAIL, mEmail);
+                                loadingDialog.dismissDialog();
+                                startActivity(new Intent(getContext(), MainActivity.class));
 
-                                        getActivity().finish();
-                                    }
-                                });
-                            }
+                                getActivity().finish();
+                            });
                         }
                     })
-                    .on("emailexists", new Emitter.Listener() {
-                        @Override
-                        public void call(final Object... args) {
-                            if (getActivity()!=null) {
-                                getActivity().runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(getContext(), "Already have an account to register with this email", Toast.LENGTH_LONG).show();
-                                        etEmail.setText("");
-                                        loadingDialog.dismissDialog();
-                                    }
-                                });
-                            }
+                    .on("emailexists", args -> {
+                        if (getActivity()!=null) {
+                            getActivity().runOnUiThread(() -> {
+                                Toast.makeText(getContext(), "Already have an account to register with this email", Toast.LENGTH_LONG).show();
+                                etEmail.setText("");
+                                loadingDialog.dismissDialog();
+                            });
                         }
                     });
         }
@@ -182,12 +160,9 @@ public class SignUpFragment extends Fragment {
     }
 
     private void hideKeyboard(EditText editText) {
-        editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                if (!b) {
-                    ((StartActivity) getActivity()).hideKeyboard(view);
-                }
+        editText.setOnFocusChangeListener((view, b) -> {
+            if (!b) {
+                ((StartActivity) getActivity()).hideKeyboard(view);
             }
         });
     }

@@ -85,7 +85,6 @@ public class CreateNewPostFragment extends Fragment implements View.OnClickListe
 
     private NavController navController;
 
-    private String currentTime;
 
     //my server
     private String id;
@@ -142,7 +141,6 @@ public class CreateNewPostFragment extends Fragment implements View.OnClickListe
     }
 
     private void initFireBase(){
-        currentTime = String.valueOf(System.currentTimeMillis());
         mStorageRef = FirebaseStorage.getInstance().getReference("uploads").child("posts");
     }
 

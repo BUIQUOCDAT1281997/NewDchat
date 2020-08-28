@@ -2,10 +2,8 @@ package bui.quocdat.dchat.Activity;
 
 import android.Manifest;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -24,7 +22,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.Socket;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -42,6 +39,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import bui.quocdat.dchat.Other.LoadingDialog;
+import bui.quocdat.dchat.Other.PreferenceManager;
 import bui.quocdat.dchat.Other.Strings;
 import bui.quocdat.dchat.R;
 import bui.quocdat.dchat.Socketconnetion.SocketManager;
@@ -71,33 +69,24 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        SharedPreferences sharedPreferences = getSharedPreferences(Strings.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-        id = sharedPreferences.getString(Strings.USER_ID, "");
+        id = new PreferenceManager(this).getString(Strings.USER_ID);
 
         initView();
 
-        socket.emit("getInfOfUser", id).on("resultInfOfUser", new Emitter.Listener() {
-            @Override
-            public void call(final Object... args) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        JSONObject infUser = (JSONObject) args[0];
-                        try {
-                            String url = infUser.getString("url");
-                            if (!url.isEmpty()) {
-                                Glide.with(getApplicationContext())
-                                        .load(url)
-                                        .into(imgUser);
-                            }
-                            tvUserName.setText(infUser.getString("last_name"));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
+        socket.emit("getInfOfUser", id).on("resultInfOfUser", args -> runOnUiThread(() -> {
+            JSONObject infUser = (JSONObject) args[0];
+            try {
+                String url = infUser.getString("url");
+                if (!url.isEmpty()) {
+                    Glide.with(getApplicationContext())
+                            .load(url)
+                            .into(imgUser);
+                }
+                tvUserName.setText(infUser.getString("last_name"));
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        });
+        }));
 
     }
 
@@ -175,48 +164,27 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 + "." + getFileExtension(imageUri));
 
         uploadTask = fileReference.putFile(imageUri);
-        uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-            @Override
-            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                if (!task.isSuccessful()) {
-                    throw task.getException();
-                }
-                return fileReference.getDownloadUrl();
+        uploadTask.continueWithTask((Continuation<UploadTask.TaskSnapshot, Task<Uri>>) task -> {
+            if (!task.isSuccessful()) {
+                throw task.getException();
             }
-        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-            @Override
-            public void onComplete(@NonNull Task<Uri> task) {
-                if (task.isSuccessful()) {
-                    Uri downloadUri = task.getResult();
-                    assert downloadUri != null;
-                    final String mUri = downloadUri.toString();
+            return fileReference.getDownloadUrl();
+        }).addOnCompleteListener((OnCompleteListener<Uri>) task -> {
+            if (task.isSuccessful()) {
+                Uri downloadUri = task.getResult();
+                assert downloadUri != null;
+                final String mUri = downloadUri.toString();
 
-                    socket.emit("updatePictureUser", mUri, id).on("success", new Emitter.Listener() {
-                        @Override
-                        public void call(Object... args) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Glide.with(getApplicationContext())
-                                            .load(mUri)
-                                            .into(imgUser);
-                                }
-                            });
-                        }
-                    });
+                socket.emit("updatePictureUser", mUri, id).on("success", args -> runOnUiThread(() -> Glide.with(getApplicationContext())
+                        .load(mUri)
+                        .into(imgUser)));
 
-                } else {
-                    Toast.makeText(ProfileActivity.this, "Failed", Toast.LENGTH_SHORT).show();
-                }
-                loadingDialog.dismissDialog();
-
+            } else {
+                Toast.makeText(ProfileActivity.this, "Failed", Toast.LENGTH_SHORT).show();
             }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(ProfileActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+            loadingDialog.dismissDialog();
+
+        }).addOnFailureListener(e -> Toast.makeText(ProfileActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
     private String getFileExtension(Uri uri) {
@@ -230,18 +198,15 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         builder.setTitle("Select Action");
         builder.setBackground(getResources().getDrawable(R.drawable.alert_dialog_bg));
         String[] pictureDialogItems = {"Select photo from gallery","Capture photo from camera"};
-        builder.setItems(pictureDialogItems, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int i) {
-                switch (i){
-                    case 0 :{
-                        requestPermission(true);
-                        break;
-                    }
-                    case 1 : {
-                        requestPermission(false);
-                        break;
-                    }
+        builder.setItems(pictureDialogItems, (dialog, i) -> {
+            switch (i){
+                case 0 :{
+                    requestPermission(true);
+                    break;
+                }
+                case 1 : {
+                    requestPermission(false);
+                    break;
                 }
             }
         });
